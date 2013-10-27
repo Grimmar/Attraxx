@@ -12,16 +12,22 @@ import java.awt.Color;
  */
 public enum Player {
     
-    PLAYER1(Color.BLUE), PLAYER2(Color.RED);
+    PLAYER1(Color.BLUE, 1), PLAYER2(Color.RED,2);
     
     private Color color;
+    private int order;
     
-    Player(Color c){
+    Player(Color c, int p){
         color = c;
+        order = p;
     }
     
     public Color getColor(){
         return color;
+    }
+    
+    public int getOrder(){
+        return order;
     }
     
 }

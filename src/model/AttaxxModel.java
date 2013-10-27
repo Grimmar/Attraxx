@@ -59,7 +59,7 @@ public class AttaxxModel {
             end.setPlayer(start.getPlayer());
             spread(end);
         } else {
-            if (start.isNear(end, 2)) {
+            if (start.isNear(end, 2) && start.isPossibleMove(end)) {
                 Position pStart = start.getPosition();
                 shelf.get(pEnd.getX()).get(pEnd.getY()).setPlayer(start.getPlayer());
                 shelf.get(pStart.getX()).get(pStart.getY()).setPlayer(null);
@@ -74,7 +74,6 @@ public class AttaxxModel {
         int y = p.getY();
 
         for (int i = (x - 1); i <= (x + 1); i++) {
-            System.out.println("i :" + i);
             for (int j = (y - 1); j <= (y + 1); j++) {
                 doSpread(c, i, j);
             }

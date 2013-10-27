@@ -43,6 +43,24 @@ public class Position {
         return false;
     }
 
+    public boolean isPosibleMove(Position p){
+        if(x == p.x ||y == p.y){
+            return true;
+        }
+        if((x+2) == p.x && (y+2) == p.y){
+            return true;
+        }
+        if((x-2) == p.x && (y+2) == p.y){
+            return true;
+        }
+        if((x+2) == p.x && (y-2) == p.y){
+            return true;
+        }
+        if((x-2) == p.x && (y-2) == p.y){
+            return true;
+        }
+        return false;
+    }
     @Override
     public String toString() {
         return "Position{" + "x=" + x + ", y=" + y + '}';

@@ -40,8 +40,6 @@ public class AttaxxButton extends JButton {
 
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
-                System.out.println("fdsf"+evt.getNewValue()); 
-                System.out.println(evt.getOldValue()); 
                 redraw();
             }
         });

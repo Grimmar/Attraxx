@@ -5,9 +5,14 @@
 package view;
 
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import model.AttaxxModel;
@@ -24,14 +29,31 @@ public class Game {
     private JFrame frame;
     private Case start = null;
     private Case end = null;
+    private int round = 1;
 
     public void run() {
         initModel();
         init();
+        initMenu();
         initGame();
+
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+    }
+
+    private void initMenu() {
+        JMenuBar menuBar = new JMenuBar();
+        JMenu menu = new JMenu("Fichier");
+        JMenuItem newPart = new JMenuItem("Nouvelle partie");
+        newPart.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            }
+        });
+        menu.add(newPart);
+        menuBar.add(menu);
+        frame.setJMenuBar(menuBar);
     }
 
     private void initGame() {
@@ -44,20 +66,18 @@ public class Game {
                     @Override
                     public void mousePressed(MouseEvent e) {
                         AttaxxButton b = (AttaxxButton) e.getSource();
-//                        System.out.println(b.getCaseModel());
                         if (b.getCaseModel().getPlayer() != null) {
-                            if (start == null) {
+                            if (start == null && b.getCaseModel().getPlayer().getOrder() % 2 == round) {
                                 start = b.getCaseModel();
                             }
                         }
                         if (start != null && b.getCaseModel().getPlayer() == null) {
                             end = b.getCaseModel();
-                            System.out.println(end.getPosition());
-                            System.out.println(end.getPlayer());
                             model.move(start, end);
                             b.redraw();
                             start = null;
                             end = null;
+                            round = (round + 1) % 2;
                         }
                     }
                 });

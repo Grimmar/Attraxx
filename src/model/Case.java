@@ -44,6 +44,9 @@ public class Case {
         return position.isNear(c.getPosition(), range);
     }
 
+    public boolean isPossibleMove(Case c){
+        return position.isPosibleMove(c.getPosition());
+    }
     public void addPropertyChangeSuppor(PropertyChangeListener ls){
         pcs.addPropertyChangeListener(ls);
     }
