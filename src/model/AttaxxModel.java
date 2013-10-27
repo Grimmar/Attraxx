@@ -36,6 +36,28 @@ public class AttaxxModel {
         }
     }
 
+    public Player isWin() {
+        int nbPlayer1 = 0;
+        int nbPlayer2 = 0;
+        for (int i = 0; i < shelf.size(); i++) {
+            for (int j = 0; j < shelf.size(); j++) {
+                if (shelf.get(i).get(j).getPlayer() == Player.PLAYER1) {
+                    nbPlayer1++;
+                }
+                if (shelf.get(i).get(j).getPlayer() == Player.PLAYER2) {
+                    nbPlayer2++;
+                }
+            }
+        }
+        if (nbPlayer1 == 0) {
+            return Player.PLAYER1;
+        }
+        if (nbPlayer2 == 0) {
+            return Player.PLAYER2;
+        }
+        return null;
+    }
+
     public void print() {
         for (List<Case> lc : shelf) {
             for (Case c : lc) {
@@ -52,7 +74,7 @@ public class AttaxxModel {
         return shelf.get(x).get(y);
     }
 
-    public void move(Case start, Case end) {
+    public void move(Case start, Case end) throws IllegalAccessException {
         Position pEnd = end.getPosition();
         if (start.isNear(end, 1)) {
             shelf.get(pEnd.getX()).get(pEnd.getY()).setPlayer(start.getPlayer());
@@ -64,6 +86,8 @@ public class AttaxxModel {
                 shelf.get(pEnd.getX()).get(pEnd.getY()).setPlayer(start.getPlayer());
                 shelf.get(pStart.getX()).get(pStart.getY()).setPlayer(null);
                 spread(shelf.get(pEnd.getX()).get(pEnd.getY()));
+            } else{
+                throw new IllegalAccessException();
             }
         }
     }

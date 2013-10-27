@@ -9,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -73,11 +75,15 @@ public class Game {
                         }
                         if (start != null && b.getCaseModel().getPlayer() == null) {
                             end = b.getCaseModel();
-                            model.move(start, end);
-                            b.redraw();
-                            start = null;
-                            end = null;
-                            round = (round + 1) % 2;
+                            try {
+                                model.move(start, end);
+                                b.redraw();
+                                start = null;
+                                end = null;
+                                round = (round + 1) % 2;
+                            } catch (IllegalAccessException ex) {
+                            }
+
                         }
                     }
                 });
