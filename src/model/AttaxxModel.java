@@ -54,14 +54,18 @@ public class AttaxxModel {
 
     public void move(Case start, Case end) {
         Position pEnd = end.getPosition();
-        shelf.get(pEnd.getX()).get(pEnd.getY()).setPlayer(start.getPlayer());
-        if (!start.isNear(end, 1)) {
-            Position pStart = start.getPosition();
-            shelf.get(pStart.getX()).get(pStart.getY()).setPlayer(null);
+        if (start.isNear(end, 1)) {
+            shelf.get(pEnd.getX()).get(pEnd.getY()).setPlayer(start.getPlayer());
+            end.setPlayer(start.getPlayer());
+            spread(end);
+        } else {
+            if (start.isNear(end, 2)) {
+                Position pStart = start.getPosition();
+                shelf.get(pEnd.getX()).get(pEnd.getY()).setPlayer(start.getPlayer());
+                shelf.get(pStart.getX()).get(pStart.getY()).setPlayer(null);
+                spread(shelf.get(pEnd.getX()).get(pEnd.getY()));
+            }
         }
-        System.out.println("DANS MOVE : " + start.getPlayer());
-        end.setPlayer(start.getPlayer());
-        spread(end);
     }
 
     private void spread(Case c) {
@@ -70,10 +74,9 @@ public class AttaxxModel {
         int y = p.getY();
 
         for (int i = (x - 1); i <= (x + 1); i++) {
+            System.out.println("i :" + i);
             for (int j = (y - 1); j <= (y + 1); j++) {
-                if (i != x && y != j) {
-                    doSpread(c, i, j);
-                }
+                doSpread(c, i, j);
             }
         }
     }

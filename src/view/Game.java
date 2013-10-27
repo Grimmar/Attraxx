@@ -44,7 +44,7 @@ public class Game {
                     @Override
                     public void mousePressed(MouseEvent e) {
                         AttaxxButton b = (AttaxxButton) e.getSource();
-                        System.out.println(b.getCaseModel());
+//                        System.out.println(b.getCaseModel());
                         if (b.getCaseModel().getPlayer() != null) {
                             if (start == null) {
                                 start = b.getCaseModel();
@@ -55,7 +55,6 @@ public class Game {
                             System.out.println(end.getPosition());
                             System.out.println(end.getPlayer());
                             model.move(start, end);
-                            System.out.println("APRES LE MOVE : "+end.getPlayer());
                             b.redraw();
                             start = null;
                             end = null;

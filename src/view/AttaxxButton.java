@@ -8,6 +8,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import javax.swing.JButton;
 import model.Case;
 
@@ -33,6 +35,16 @@ public class AttaxxButton extends JButton {
 
             }
         });
+        
+        model.addPropertyChangeSuppor(new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                System.out.println("fdsf"+evt.getNewValue()); 
+                System.out.println(evt.getOldValue()); 
+                redraw();
+            }
+        });
 
     }
 
@@ -42,7 +54,7 @@ public class AttaxxButton extends JButton {
 
     public void redraw() {
         if (model.getPlayer() == null) {
-            this.setBackground(Color.GRAY);
+            this.setBackground(null);
         } else {
             this.setBackground(model.getPlayer().getColor());
         }
