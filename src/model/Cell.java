@@ -10,11 +10,12 @@ import java.beans.PropertyChangeSupport;
 public class Cell {
 
     private Position position;
-    private Player player;
+    private Owner owner;
     private PropertyChangeSupport propertyChangeSupport;
     
     public Cell(int x, int y){
         position = new Position(x, y);
+        owner = Owner.NONE;
         propertyChangeSupport = new PropertyChangeSupport(this);
     }
 
@@ -26,27 +27,32 @@ public class Cell {
         return position.getY();
     }
 
-    public void setPosition(int x, int y) {
-        this.position = new Position(x, y);
+    public Owner getOwner() {
+        return owner;
     }
 
-    public Player getPlayer() {
-        return player;
+    public void setOwner(Owner owner) {
+        Owner oldOwner = this.owner;
+        this.owner = owner;
+        propertyChangeSupport.firePropertyChange("owner", oldOwner, owner);
     }
 
-    public void setPlayer(Player player) {
-        Player oldPlayer = this.player;
-        this.player = player;
-        propertyChangeSupport.firePropertyChange("player", oldPlayer, player);
+    public static boolean isCellAvailable(Cell end) {
+        return end.getOwner() == Owner.NONE;
+    }
+
+    public void clear() {
+        owner = Owner.NONE;
     }
 
     public boolean isNear(Cell c, int range) {
         return position.isNear(c.position, range);
     }
 
-    public boolean isMovePossible(Cell c){
-        return position.isPossibleMove(c.position);
+    public boolean canMove(Cell c){
+        return position.canMove(c.position);
     }
+
     public void addPropertyChangeSupport(PropertyChangeListener ls){
         propertyChangeSupport.addPropertyChangeListener(ls);
     }
@@ -56,13 +62,13 @@ public class Cell {
     
     @Override
     public String toString() {
-        if (player == null) {
+        if (owner == null) {
             return "N";
         }
-        switch (player) {
-            case FIRST_PLAYER:
+        switch (owner) {
+            case BLUE:
                 return "P1";
-            case SECOND_PLAYER:
+            case RED:
                 return "P2";
         }
         return "";
@@ -93,8 +99,8 @@ public class Cell {
             return false;
         }
 
-        public boolean isPossibleMove(Position p){
-            if(x == p.x ||y == p.y){
+        public boolean canMove(Position p){
+            if(x == p.x || y == p.y){
                 return true;
             }
             if((x+2) == p.x && (y+2) == p.y){

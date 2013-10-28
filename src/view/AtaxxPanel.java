@@ -5,7 +5,7 @@
 package view;
 
 import model.Cell;
-import model.Player;
+import model.Owner;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -45,10 +45,12 @@ public class AtaxxPanel extends JPanel {
 
     @Override
     public Color getBackground() {
-        if (model == null || model.getPlayer() == null) {
+        if (model == null || Owner.NONE == model.getOwner()) {
             return super.getBackground();
+        } else if (Owner.VOID == model.getOwner()) {
+            return Color.BLACK;
         } else {
-            return getPlayer().getColor();
+            return model.getOwner().getColor();
         }
     }
 
@@ -56,7 +58,7 @@ public class AtaxxPanel extends JPanel {
         return model;
     }
 
-    public Player getPlayer() {
-        return model.getPlayer();
+    public Owner getOwner() {
+        return model.getOwner();
     }
 }

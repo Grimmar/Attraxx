@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package model;
 
 import java.util.ArrayList;
@@ -13,62 +9,84 @@ import java.util.List;
  */
 public class AtaxxModel {
 
-    private List<List<Cell>> board;
-    private int round;
-    private Player player;
+    public static final int SINGLE_TOKEN = 1;
+    public static final int TWO_TOKENS = 2;
 
-    public AtaxxModel() {
+    public static final int NO_VOID_CELLS = 0;
+
+    private List<List<Cell>> board;
+    private int numberOfPlay;
+    private Owner currentPlayer;
+    private int boardSize;
+    private static AtaxxModel instance;
+    private int blueTokens;
+    private int redTokens;
+
+    private AtaxxModel() {
         board = new ArrayList<>();
     }
 
+    public static AtaxxModel getInstance() {
+        if (instance == null) {
+           instance = new AtaxxModel();
+        }
+        return instance;
+    }
+
     public void generate(int size) {
+       generate(size, SINGLE_TOKEN);
+    }
+
+    public void generate(int size, int startingPieces) {
+        generate(size, startingPieces, NO_VOID_CELLS);
+    }
+
+    public void generate(int size, int startingPieces, int voidCells) {
         board.clear();
-        round = 1;
-        player = Player.FIRST_PLAYER;
+        numberOfPlay = 1;
+        boardSize = size;
+        currentPlayer = Owner.BLUE;
         for (int i = 0; i < size; i++) {
             board.add(new ArrayList<Cell>());
             for (int j = 0; j < size; j++) {
-                Cell c = new Cell(i, j);
-                if (i == 0 && j == 0) {
-                    c.setPlayer(Player.FIRST_PLAYER);
-                }
-                if (i == size - 1 && j == size - 1) {
-                    c.setPlayer(Player.SECOND_PLAYER);
-                }
-                board.get(i).add(c);
+                board.get(i).add(new Cell(i, j));
             }
+        }
+        setOwnership(size, startingPieces);
+
+        if (voidCells > NO_VOID_CELLS) {
+            //TODO Algorithme de génération des cases vides
+            board.get(2).get(2).setOwner(Owner.VOID);
         }
     }
 
-    public Player isWin() {
-        int nbPlayer1 = 0;
-        int nbPlayer2 = 0;
-        for (int i = 0; i < board.size(); i++) {
-            for (int j = 0; j < board.size(); j++) {
-                if (board.get(i).get(j).getPlayer() == Player.FIRST_PLAYER) {
-                    nbPlayer1++;
-                }
-                if (board.get(i).get(j).getPlayer() == Player.SECOND_PLAYER) {
-                    nbPlayer2++;
-                }
-            }
+    private void setOwnership(int size, int startingPieces) {
+        switch(startingPieces) {
+            case TWO_TOKENS:
+                get(0, 0).setOwner(Owner.BLUE);
+                get(size - 1, size - 1).setOwner(Owner.BLUE);
+
+                get(size - 1, 0).setOwner(Owner.RED);
+                get(0, size - 1).setOwner(Owner.RED);
+                redTokens = blueTokens = TWO_TOKENS;
+                break;
+            default:
+                get(0, 0).setOwner(Owner.BLUE);
+                get(size - 1, size - 1).setOwner(Owner.RED);
         }
-        if (nbPlayer1 == 0) {
-            return Player.FIRST_PLAYER;
-        }
-        if (nbPlayer2 == 0) {
-            return Player.SECOND_PLAYER;
+    }
+    //TODO ajouter gestion des coups identiques plusieurs fois de suite
+    public boolean isGameOver() {
+        return blueTokens == 0 || redTokens == 0;
+    }
+
+    public Owner getWinner() {
+        if (blueTokens == 0) {
+            return Owner.RED;
+        } else if (redTokens == 0) {
+            return Owner.BLUE;
         }
         return null;
-    }
-
-    public void print() {
-        for (List<Cell> lc : board) {
-            for (Cell c : lc) {
-                System.out.print(c + "   ");
-            }
-            System.out.println();
-        }
     }
 
     public Cell get(int x, int y) {
@@ -79,17 +97,41 @@ public class AtaxxModel {
     }
 
     public void move(Cell begin, Cell end) throws IllegalAccessException {
-        if (begin.isNear(end, 1)) {
-            board.get(end.getPositionX()).get(end.getPositionY()).setPlayer(begin.getPlayer());
-            end.setPlayer(begin.getPlayer());
-            spread(end);
+        boolean canMove = false;
+        if (Cell.isCellAvailable(end)) {
+            int endX = end.getPositionX();
+            int endY = end.getPositionY();
+            if (begin.isNear(end, 1)) {
+                board.get(endX).get(endY).setOwner(begin.getOwner());
+                end.setOwner(begin.getOwner());
+                spread(end);
+                canMove = true;
+            } else if (begin.isNear(end, 2) && begin.canMove(end)) {
+                board.get(endX).get(endY).setOwner(begin.getOwner());
+                board.get(begin.getPositionX()).get(begin.getPositionY()).clear();
+                spread(board.get(endX).get(endY));
+                canMove = true;
+            }
+        }
+        if (canMove) {
+            updateTokenNumber();
         } else {
-            if (begin.isNear(end, 2) && begin.isMovePossible(end)) {
-                board.get(end.getPositionX()).get(end.getPositionY()).setPlayer(begin.getPlayer());
-                board.get(begin.getPositionX()).get(begin.getPositionY()).setPlayer(null);
-                spread(board.get(end.getPositionX()).get(end.getPositionY()));
-            } else{
-                throw new IllegalAccessException();
+            throw new IllegalAccessException();
+        }
+    }
+
+    private void updateTokenNumber() {
+        blueTokens = 0;
+        redTokens = 0;
+        for (int i = 0; i < board.size(); i++) {
+            for (int j = 0; j < board.size(); j++) {
+                Cell c = board.get(i).get(j);
+                if (Owner.BLUE == c.getOwner()) {
+                    blueTokens++;
+                }
+                if (Owner.RED == c.getOwner()) {
+                    redTokens++;
+                }
             }
         }
     }
@@ -100,29 +142,49 @@ public class AtaxxModel {
 
         for (int i = (x - 1); i <= (x + 1); i++) {
             for (int j = (y - 1); j <= (y + 1); j++) {
-                doSpread(c, i, j);
+                if (i < 0 || j < 0 || i >= boardSize || j >= boardSize) {
+                    continue;
+                }
+                Cell current = board.get(i).get(j);
+                if (current.getOwner() != c.getOwner()
+                        && Owner.NONE != current.getOwner()
+                        && Owner.VOID != current.getOwner()) {
+                    current.setOwner(c.getOwner());
+                    spread(current);
+                }
             }
         }
     }
 
-    private void doSpread(Cell c, int i, int j) {
-        try {
-            if (board.get(i).get(j).getPlayer() != c.getPlayer() && board.get(i).get(j).getPlayer() != null) {
-                board.get(i).get(j).setPlayer(c.getPlayer());
-                spread(board.get(i).get(j));
+    public void changeOwner() {
+        currentPlayer = currentPlayer.opposite();
+        numberOfPlay++;
+    }
+
+    public boolean isCurrentPlayerTurn(Owner owner) {
+        return this.currentPlayer == owner;
+    }
+
+    public int getNumberOfPlay() {
+        return numberOfPlay;
+    }
+
+    public int getBlueTokens() {
+        return blueTokens;
+    }
+
+    public int getRedTokens() {
+        return redTokens;
+    }
+
+    //TODO Remove
+    public void print() {
+        for (List<Cell> lc : board) {
+            for (Cell c : lc) {
+                System.out.print(c + "   ");
             }
-        } catch (Exception e) {
-            //System.out.println("i :"+ i +" j : "+j);
+            System.out.println();
         }
-
     }
 
-    public void changePlayer() {
-        player = Player.next(player);
-        round++;
-    }
-
-    public boolean isCurrentPlayerTurn(Player player) {
-        return this.player == player;
-    }
 }

@@ -16,11 +16,10 @@ import java.util.List;
  */
 public class Game {
 
-    private static final int SIZE = 7;
+    private static final int BOARD_SIZE = 7;
     private AtaxxModel model;
     private List<JPanel> ataxxPanels;
     private JFrame frame;
-    //TODO SET IN MODEL
 
     public Game() {
         createModel();
@@ -32,15 +31,15 @@ public class Game {
     }
 
     private void createModel() {
-        model = new AtaxxModel();
-        model.generate(SIZE);
+        model = AtaxxModel.getInstance();
+        model.generate(BOARD_SIZE, AtaxxModel.TWO_TOKENS, 1);
     }
 
     private void createView() {
         frame = new JFrame("Ataxx");
         ataxxPanels = new ArrayList<>();
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
                 ataxxPanels.add(new AtaxxPanel(model.get(i, j)));
             }
         }
@@ -82,7 +81,7 @@ public class Game {
     }
 
     private void placeComponents() {
-        JPanel p = new JPanel(new GridLayout(SIZE, SIZE));
+        JPanel p = new JPanel(new GridLayout(BOARD_SIZE, BOARD_SIZE));
         for (JPanel q : ataxxPanels) {
             p.add(q);
         }
@@ -96,7 +95,6 @@ public class Game {
     }
 
     public static void main(String[] args) {
-
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
