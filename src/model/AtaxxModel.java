@@ -14,11 +14,11 @@ public class AtaxxModel {
 
     public static final int NO_VOID_CELLS = 0;
 
+    private static AtaxxModel instance;
     private List<List<Cell>> board;
     private int numberOfPlay;
     private Owner currentPlayer;
     private int boardSize;
-    private static AtaxxModel instance;
     private int blueTokens;
     private int redTokens;
 
@@ -56,23 +56,23 @@ public class AtaxxModel {
 
         if (voidCells > NO_VOID_CELLS) {
             //TODO Algorithme de génération des cases vides
-            board.get(2).get(2).setOwner(Owner.VOID);
+            board.get(2).get(2).lock();
         }
     }
 
     private void setOwnership(int size, int startingPieces) {
         switch(startingPieces) {
             case TWO_TOKENS:
-                get(0, 0).setOwner(Owner.BLUE);
-                get(size - 1, size - 1).setOwner(Owner.BLUE);
+                get(0, 0).addPiece(Owner.BLUE);
+                get(size - 1, size - 1).addPiece(Owner.BLUE);
 
-                get(size - 1, 0).setOwner(Owner.RED);
-                get(0, size - 1).setOwner(Owner.RED);
+                get(size - 1, 0).addPiece(Owner.RED);
+                get(0, size - 1).addPiece(Owner.RED);
                 redTokens = blueTokens = TWO_TOKENS;
                 break;
             default:
-                get(0, 0).setOwner(Owner.BLUE);
-                get(size - 1, size - 1).setOwner(Owner.RED);
+                get(0, 0).addPiece(Owner.BLUE);
+                get(size - 1, size - 1).addPiece(Owner.RED);
         }
     }
     //TODO ajouter gestion des coups identiques plusieurs fois de suite
@@ -102,12 +102,12 @@ public class AtaxxModel {
             int endX = end.getPositionX();
             int endY = end.getPositionY();
             if (begin.isNear(end, 1)) {
-                board.get(endX).get(endY).setOwner(begin.getOwner());
-                end.setOwner(begin.getOwner());
+                board.get(endX).get(endY).addPiece(begin.getOwner());
+                end.addPiece(begin.getOwner());
                 spread(end);
                 canMove = true;
             } else if (begin.isNear(end, 2) && begin.canMove(end)) {
-                board.get(endX).get(endY).setOwner(begin.getOwner());
+                board.get(endX).get(endY).addPiece(begin.getOwner());
                 board.get(begin.getPositionX()).get(begin.getPositionY()).clear();
                 spread(board.get(endX).get(endY));
                 canMove = true;
@@ -147,16 +147,16 @@ public class AtaxxModel {
                 }
                 Cell current = board.get(i).get(j);
                 if (current.getOwner() != c.getOwner()
-                        && Owner.NONE != current.getOwner()
-                        && Owner.VOID != current.getOwner()) {
+                        && !current.isLocked()
+                        && current.getPiece() != null) {
                     current.setOwner(c.getOwner());
-                    spread(current);
+                    //spread(current);
                 }
             }
         }
     }
 
-    public void changeOwner() {
+    public void changePlayer() {
         currentPlayer = currentPlayer.opposite();
         numberOfPlay++;
     }

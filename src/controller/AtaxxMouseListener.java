@@ -1,7 +1,6 @@
 package controller;
 
 import model.AtaxxModel;
-import model.Owner;
 import view.AtaxxPanel;
 
 import java.awt.event.MouseEvent;
@@ -24,7 +23,7 @@ public class AtaxxMouseListener implements MouseListener {
     @Override
     public void mousePressed(MouseEvent e) {
         AtaxxPanel panel = (AtaxxPanel) e.getSource();
-        if (begin == null && model.isCurrentPlayerTurn(panel.getOwner())) {
+        if (begin == null && model.isCurrentPlayerTurn(panel.getModel().getOwner())) {
             begin = panel;
         }
     }
@@ -33,7 +32,7 @@ public class AtaxxMouseListener implements MouseListener {
     public void mouseEntered(MouseEvent e) {
         AtaxxPanel panel = (AtaxxPanel) e.getSource();
         if (begin != null) {
-            if (Owner.NONE == panel.getOwner()) {
+            if (panel.getModel().getOwner() == null) {
                 end = panel;
             }
         }
@@ -44,7 +43,7 @@ public class AtaxxMouseListener implements MouseListener {
         if (begin != null && end != null){
             try {
                 model.move(begin.getModel(), end.getModel());
-                model.changeOwner();
+                model.changePlayer();
             } catch (IllegalAccessException ex) {
             }
             end.repaint();

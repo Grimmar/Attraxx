@@ -5,14 +5,11 @@
 package view;
 
 import model.Cell;
-import model.Owner;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 /**
  *
@@ -25,17 +22,6 @@ public class AtaxxPanel extends JPanel {
     public AtaxxPanel(final Cell cell) {
         this.model = cell;
         this.setPreferredSize(new Dimension(50, 50));
-        createController();
-    }
-
-    private void createController() {
-        model.addPropertyChangeSupport(new PropertyChangeListener() {
-
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                repaint();
-            }
-        });
     }
 
     @Override
@@ -45,20 +31,13 @@ public class AtaxxPanel extends JPanel {
 
     @Override
     public Color getBackground() {
-        if (model == null || Owner.NONE == model.getOwner()) {
-            return super.getBackground();
-        } else if (Owner.VOID == model.getOwner()) {
+        if (model != null && model.isLocked()) {
             return Color.BLACK;
-        } else {
-            return model.getOwner().getColor();
         }
+        return super.getBackground();
     }
 
     public Cell getModel() {
         return model;
-    }
-
-    public Owner getOwner() {
-        return model.getOwner();
     }
 }

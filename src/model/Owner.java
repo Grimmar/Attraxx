@@ -4,7 +4,10 @@
  */
 package model;
 
-import java.awt.Color;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 
 /**
  *
@@ -12,14 +15,20 @@ import java.awt.Color;
  */
 public enum Owner {
 
-    //VOID is for holes
-    BLUE, RED, NONE, VOID;
+    BLUE(Color.BLUE), RED(Color.RED);
 
-    public Color getColor() {
-        return this == Owner.BLUE ? Color.BLUE : Color.RED;
+    private ObjectProperty<Paint> color;
+
+    Owner(Color color) {
+        colorProperty().set(color);
     }
 
     public Owner opposite() {
-        return this == BLUE ? RED : this == RED ? BLUE : NONE;
+        return this == BLUE ? RED : BLUE;
+    }
+
+    public ObjectProperty<Paint> colorProperty() {
+        if(this.color == null) { this.color = new SimpleObjectProperty<>(); }
+        return this.color;
     }
 }

@@ -6,10 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public enum Menu {
+public enum MenuEnum {
     FICHIER("Fichier");
 
-    private static final Map<Menu, List<Item>> menus;
+    private static final Map<MenuEnum, List<Item>> menus;
     private final String name;
 
     static {
@@ -19,11 +19,11 @@ public enum Menu {
         }});
     }
 
-    Menu(String name) {
+    MenuEnum(String name) {
         this.name = name;
     }
 
-    public static List<Item> getItems(Menu menu) {
+    public static List<Item> getItems(MenuEnum menu) {
         return menus.get(menu);
     }
 

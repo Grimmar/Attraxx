@@ -40,17 +40,19 @@ public class Game {
         ataxxPanels = new ArrayList<>();
         for (int i = 0; i < BOARD_SIZE; i++) {
             for (int j = 0; j < BOARD_SIZE; j++) {
-                ataxxPanels.add(new AtaxxPanel(model.get(i, j)));
+                AtaxxPanel p = new AtaxxPanel(model.get(i, j));
+                ataxxPanels.add(p);
             }
         }
+
     }
 
     private void createAndInstallMenu() {
         JMenuBar menuBar = new JMenuBar();
-        for (Menu m : Menu.values()) {
+        for (MenuEnum m : MenuEnum.values()) {
             JMenu menu = new JMenu(m.getName());
 
-            List<Item> items = Menu.getItems(m);
+            List<Item> items = MenuEnum.getItems(m);
              for (Item i : items) {
                  if (i == null) {
                     menu.addSeparator();
@@ -81,11 +83,13 @@ public class Game {
     }
 
     private void placeComponents() {
+        JPanel borderPanel = new JPanel(new BorderLayout());
         JPanel p = new JPanel(new GridLayout(BOARD_SIZE, BOARD_SIZE));
         for (JPanel q : ataxxPanels) {
             p.add(q);
         }
-        frame.add(p);
+        borderPanel.add(p, BorderLayout.CENTER);
+        frame.add(borderPanel);
     }
 
     public void display() {

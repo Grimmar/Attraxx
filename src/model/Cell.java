@@ -4,74 +4,71 @@
  */
 package model;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 
 public class Cell {
+    private ObjectProperty<Position> position;
+    private boolean locked;
+    private Piece piece;
 
-    private Position position;
-    private Owner owner;
-    private PropertyChangeSupport propertyChangeSupport;
-    
     public Cell(int x, int y){
-        position = new Position(x, y);
-        owner = Owner.NONE;
-        propertyChangeSupport = new PropertyChangeSupport(this);
+        locked = false;
+        positionProperty().set(new Position(x, y));
+        piece = null;
+    }
+
+    public ObjectProperty<Position> positionProperty() {
+        if(this.position == null) { this.position = new SimpleObjectProperty<>(); }
+        return this.position;
     }
 
     public int getPositionX() {
-        return position.getX();
+        return positionProperty().get().getX();
     }
 
     public int getPositionY() {
-        return position.getY();
+        return position.get().getY();
     }
 
-    public Owner getOwner() {
-        return owner;
-    }
-
-    public void setOwner(Owner owner) {
-        Owner oldOwner = this.owner;
-        this.owner = owner;
-        propertyChangeSupport.firePropertyChange("owner", oldOwner, owner);
-    }
-
-    public static boolean isCellAvailable(Cell end) {
-        return end.getOwner() == Owner.NONE;
-    }
-
-    public void clear() {
-        owner = Owner.NONE;
+    public static boolean isCellAvailable(Cell cell) {
+        return cell.piece == null && !cell.isLocked();
     }
 
     public boolean isNear(Cell c, int range) {
-        return position.isNear(c.position, range);
+        return position.get().isNear(c.position.get(), range);
     }
 
     public boolean canMove(Cell c){
-        return position.canMove(c.position);
+        return position.get().canMove(c.position.get());
     }
 
-    public void addPropertyChangeSupport(PropertyChangeListener ls){
-        propertyChangeSupport.addPropertyChangeListener(ls);
+    public boolean isLocked() {
+        return locked;
     }
-    public void removePropertyChangeSupport(PropertyChangeListener ls){
-        propertyChangeSupport.removePropertyChangeListener(ls);
+
+    public void lock() {
+        locked = true;
     }
-    
-    @Override
-    public String toString() {
-        if (owner == null) {
-            return "N";
-        }
-        switch (owner) {
-            case BLUE:
-                return "P1";
-            case RED:
-                return "P2";
-        }
-        return "";
+
+    public void addPiece(Owner o) {
+        piece = new Piece(o);
+    }
+
+    public Piece getPiece() {
+        return piece;
+    }
+
+    public void clear() {
+        piece = null;
+    }
+
+    public Owner getOwner() {
+        return piece != null ? piece.getOwner() : null;
+    }
+
+    public void setOwner(Owner owner) {
+        this.piece.setOwner(owner);
     }
 
     private class Position {
@@ -102,17 +99,15 @@ public class Cell {
         public boolean canMove(Position p){
             if(x == p.x || y == p.y){
                 return true;
-            }
-            if((x+2) == p.x && (y+2) == p.y){
+            } else if(((x+1) == p.x && (y+1) == p.y)
+                    || ((x+1) == p.x && (y-1) == p.y)
+                    || ((x-1) == p.x && (y+1) == p.y)
+                    || ((x-1) == p.x && (y-1) == p.y)) {
                 return true;
-            }
-            if((x-2) == p.x && (y+2) == p.y){
-                return true;
-            }
-            if((x+2) == p.x && (y-2) == p.y){
-                return true;
-            }
-            if((x-2) == p.x && (y-2) == p.y){
+            } else if(((x+2) == p.x && (y+2) == p.y)
+                    || ((x-2) == p.x && (y+2) == p.y)
+                    || ((x+2) == p.x && (y-2) == p.y)
+                    || ((x-2) == p.x && (y-2) == p.y)){
                 return true;
             }
             return false;
