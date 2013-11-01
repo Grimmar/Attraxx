@@ -5,19 +5,19 @@ import javafx.beans.binding.NumberBinding;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import model.Piece;
+import model.PieceModel;
 
-public class AtaxxPiece extends Circle {
-    private Piece piece;
-    private AtaxxTile origin;
+public class PieceView extends Circle {
+    private PieceModel pieceModel;
+    private TileView origin;
     private NumberBinding positionX = null;
     private NumberBinding positionY = null;
 
-    public AtaxxPiece(Piece piece, AtaxxTile r) {
-        this.piece = piece;
+    public PieceView(PieceModel pieceModel, TileView r) {
+        this.pieceModel = pieceModel;
         origin = r;
 
-        fillProperty().bind(piece.getOwner().colorProperty());
+        fillProperty().bind(pieceModel.getOwner().colorProperty());
         positionX = Bindings.selectDouble(r.xProperty().add(r.widthProperty().divide(2)));
         positionY = Bindings.selectDouble(r.yProperty().add(r.widthProperty().divide(2)));
         centerXProperty().bind(positionX);
@@ -53,11 +53,11 @@ public class AtaxxPiece extends Circle {
         centerYProperty().unbind();
     }
 
-    public Piece getModel() {
-        return piece;
+    public PieceModel getModel() {
+        return pieceModel;
     }
 
-    public AtaxxTile getOrigin() {
+    public TileView getOrigin() {
         return origin;
     }
 }

@@ -3,11 +3,11 @@ package view;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
-public enum Item {
+public enum ItemEnum {
     NEW_GAME("Nouvelle partie"), CLOSE("Fermer");
     private final String name;
     private EventHandler<ActionEvent> event;
-    Item(String name) {
+    ItemEnum(String name) {
         this.name = name;
     }
 

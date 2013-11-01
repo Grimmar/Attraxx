@@ -2,7 +2,7 @@ package attaxx;
 
 
 import model.AtaxxModel;
-import model.Cell;
+import model.TileModel;
 import model.Owner;
 
 import java.util.logging.Level;
@@ -18,9 +18,9 @@ public class Attaxx  {
         AtaxxModel m = AtaxxModel.getInstance();
         m.generate(7);
         m.print();
-        Cell c1 = new Cell(0,0);
+        TileModel c1 = new TileModel(0,0);
         c1.setOwner(Owner.BLUE);
-        Cell c2 = new Cell(1,1);
+        TileModel c2 = new TileModel(1,1);
         try {
             m.move(c1, c2);
         } catch (IllegalAccessException ex) {

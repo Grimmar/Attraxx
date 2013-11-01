@@ -19,7 +19,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import model.AtaxxModel;
-import model.Piece;
+import model.PieceModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +30,8 @@ public class Ataxx extends Application {
     private int numberOfLock;
     private int startingPieces;
     private AtaxxModel model;
-    private List<AtaxxPiece> pieces;
-    private List<AtaxxTile> tiles;
+    private List<PieceView> pieceViews;
+    private List<TileView> tileViews;
     private AnchorPane pane;
     private Scene scene;
 
@@ -62,8 +62,8 @@ public class Ataxx extends Application {
     }
 
     private void createView(Scene scene) {
-        pieces = new ArrayList<>();
-        tiles = new ArrayList<>();
+        pieceViews = new ArrayList<>();
+        tileViews = new ArrayList<>();
 
         pane = new AnchorPane();
         initBoard(BOARD_SIZE);
@@ -76,21 +76,21 @@ public class Ataxx extends Application {
                 scene.widthProperty());
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                AtaxxTile r = new AtaxxTile(model.get(i, j));
+                TileView r = new TileView(model.get(i, j));
                 r.xProperty().bind(rectsAreaSize.multiply(i).divide(size));
                 r.yProperty().bind(rectsAreaSize.multiply(j).divide(size));
                 r.heightProperty().bind(rectsAreaSize.divide(size));
                 r.widthProperty().bind(r.heightProperty());
 
-                Piece piece = model.get(i, j).getPiece();
-                if (piece != null) {
-                    pieces.add(makeAtaxxPiece(piece, r));
+                PieceModel pieceModel = model.get(i, j).getPieceModel();
+                if (pieceModel != null) {
+                    pieceViews.add(makeAtaxxPiece(pieceModel, r));
                 }
-                tiles.add(r);
+                tileViews.add(r);
                 pane.getChildren().add(r);
             }
         }
-        for (Circle c : pieces) {
+        for (Circle c : pieceViews) {
             pane.getChildren().add(c);
         }
     }
@@ -100,8 +100,8 @@ public class Ataxx extends Application {
         for (MenuEnum m : MenuEnum.values()) {
             Menu menu = new Menu(m.getName());
 
-            List<Item> items = MenuEnum.getItems(m);
-            for (Item i : items) {
+            List<ItemEnum> items = MenuEnum.getItems(m);
+            for (ItemEnum i : items) {
                 if (i == null) {
                     menu.getItems().add(new SeparatorMenuItem());
                 } else {
@@ -116,30 +116,36 @@ public class Ataxx extends Application {
     }
 
     private void createEventHandlers() {
-        Item.NEW_GAME.setEvent(new EventHandler<ActionEvent>() {
+        ItemEnum.NEW_GAME.setEvent(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                pieces.clear();
-                tiles.clear();
+                pieceViews.clear();
+                tileViews.clear();
                 pane.getChildren().clear();
                 int size = BOARD_SIZE;
                 model.generate(size, startingPieces, numberOfLock);
                 initBoard(size);
             }
         });
+        ItemEnum.CLOSE.setEvent(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                System.exit(0);
+            }
+        });
     }
 
-    public AtaxxPiece makeAtaxxPiece(Piece p, AtaxxTile t) {
-        AtaxxPiece piece = new AtaxxPiece(p, t);
-        piece.radiusProperty().bind(t.heightProperty().divide(2).subtract(10));
-        piece.setOnMousePressed(new AtaxxMousePressedHandler(model, this));
-        piece.setOnMouseDragged(new AtaxxMouseDraggedHandler(model, this));
-        piece.setOnMouseReleased(new AtaxxMouseReleasedHandler(model, this));
-        return piece;
+    public PieceView makeAtaxxPiece(PieceModel p, TileView t) {
+        PieceView pieceView = new PieceView(p, t);
+        pieceView.radiusProperty().bind(t.heightProperty().divide(2).subtract(10));
+        pieceView.setOnMousePressed(new AtaxxMousePressedHandler(model, this));
+        pieceView.setOnMouseDragged(new AtaxxMouseDraggedHandler(model, this));
+        pieceView.setOnMouseReleased(new AtaxxMouseReleasedHandler(model, this));
+        return pieceView;
     }
 
-    public List<AtaxxTile> getTiles() {
-        return tiles;
+    public List<TileView> getTileViews() {
+        return tileViews;
     }
 
     public double getSceneWidth() {
@@ -151,14 +157,14 @@ public class Ataxx extends Application {
     }
 
     public void clearPieces() {
-        for (AtaxxPiece p : pieces) {
+        for (PieceView p : pieceViews) {
             pane.getChildren().remove(p);
         }
-        pieces.clear();
+        pieceViews.clear();
     }
 
-    public void addPiece(AtaxxPiece piece) {
-        pieces.add(piece);
+    public void addPiece(PieceView pieceView) {
+        pieceViews.add(pieceView);
     }
 
     public AnchorPane getPane() {

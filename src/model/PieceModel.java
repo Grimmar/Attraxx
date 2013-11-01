@@ -3,10 +3,10 @@ package model;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
-public class Piece {
+public class PieceModel {
     private ObjectProperty<Owner> owner;
 
-    public Piece(Owner o) {
+    public PieceModel(Owner o) {
         setOwner(o);
     }
     public ObjectProperty<Owner> ownerProperty() {

@@ -9,15 +9,15 @@ import java.util.Map;
 public enum MenuEnum {
     FICHIER("Fichier");
 
-    private static final Map<MenuEnum, List<Item>> menus;
+    private static final Map<MenuEnum, List<ItemEnum>> menus;
     private final String name;
 
     static {
         menus = new HashMap<>();
-        menus.put(FICHIER, new ArrayList<Item>(){{
-            add(Item.NEW_GAME);
+        menus.put(FICHIER, new ArrayList<ItemEnum>(){{
+            add(ItemEnum.NEW_GAME);
             add(null);
-            add(Item.CLOSE);
+            add(ItemEnum.CLOSE);
         }});
     }
 
@@ -25,7 +25,7 @@ public enum MenuEnum {
         this.name = name;
     }
 
-    public static List<Item> getItems(MenuEnum menu) {
+    public static List<ItemEnum> getItems(MenuEnum menu) {
         return menus.get(menu);
     }
 

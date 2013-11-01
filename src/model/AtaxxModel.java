@@ -15,7 +15,7 @@ public class AtaxxModel {
     public static final int NO_VOID_CELLS = 0;
 
     private static AtaxxModel instance;
-    private List<List<Cell>> board;
+    private List<List<TileModel>> board;
     private int numberOfPlay;
     private Owner currentPlayer;
     private int boardSize;
@@ -47,9 +47,9 @@ public class AtaxxModel {
         boardSize = size;
         currentPlayer = Owner.BLUE;
         for (int i = 0; i < size; i++) {
-            board.add(new ArrayList<Cell>());
+            board.add(new ArrayList<TileModel>());
             for (int j = 0; j < size; j++) {
-                board.get(i).add(new Cell(i, j));
+                board.get(i).add(new TileModel(i, j));
             }
         }
         setOwnership(size, startingPieces);
@@ -89,16 +89,16 @@ public class AtaxxModel {
         return null;
     }
 
-    public Cell get(int x, int y) {
+    public TileModel get(int x, int y) {
         if (x < 0 && x >= board.size() && y < 0 && y >= board.size()) {
             throw new IllegalArgumentException();
         }
         return board.get(x).get(y);
     }
 
-    public void move(Cell begin, Cell end) throws IllegalAccessException {
+    public void move(TileModel begin, TileModel end) throws IllegalAccessException {
         boolean canMove = false;
-        if (Cell.isCellAvailable(end)) {
+        if (TileModel.isCellAvailable(end)) {
             int endX = end.getPositionX();
             int endY = end.getPositionY();
             if (begin.isNear(end, 1)) {
@@ -125,7 +125,7 @@ public class AtaxxModel {
         redTokens = 0;
         for (int i = 0; i < board.size(); i++) {
             for (int j = 0; j < board.size(); j++) {
-                Cell c = board.get(i).get(j);
+                TileModel c = board.get(i).get(j);
                 if (Owner.BLUE == c.getOwner()) {
                     blueTokens++;
                 }
@@ -136,7 +136,7 @@ public class AtaxxModel {
         }
     }
 
-    private void spread(Cell c) {
+    private void spread(TileModel c) {
         int x = c.getPositionX();
         int y = c.getPositionY();
 
@@ -145,10 +145,10 @@ public class AtaxxModel {
                 if (i < 0 || j < 0 || i >= boardSize || j >= boardSize) {
                     continue;
                 }
-                Cell current = board.get(i).get(j);
+                TileModel current = board.get(i).get(j);
                 if (current.getOwner() != c.getOwner()
                         && !current.isLocked()
-                        && current.getPiece() != null) {
+                        && current.getPieceModel() != null) {
                     current.setOwner(c.getOwner());
                     //spread(current);
                 }
@@ -179,8 +179,8 @@ public class AtaxxModel {
 
     //TODO Remove
     public void print() {
-        for (List<Cell> lc : board) {
-            for (Cell c : lc) {
+        for (List<TileModel> lc : board) {
+            for (TileModel c : lc) {
                 System.out.print(c + "   ");
             }
             System.out.println();

@@ -2,10 +2,10 @@ package controller;
 
 import javafx.scene.input.MouseEvent;
 import model.AtaxxModel;
-import model.Cell;
+import model.TileModel;
 import view.Ataxx;
-import view.AtaxxPiece;
-import view.AtaxxTile;
+import view.PieceView;
+import view.TileView;
 
 public class AtaxxMousePressedHandler extends AtaxxAbstractHandler {
 
@@ -15,15 +15,15 @@ public class AtaxxMousePressedHandler extends AtaxxAbstractHandler {
 
     @Override
     public void handle(MouseEvent mouseEvent) {
-        AtaxxPiece piece = (AtaxxPiece) mouseEvent.getSource();
-        if (model.isCurrentPlayerTurn(piece.getModel().getOwner())) {
-            dragged = piece;
-            AtaxxTile origin = piece.getOrigin();
-            piece.startMove();
-            for (AtaxxTile r : view.getTiles()) {
+        PieceView pieceView = (PieceView) mouseEvent.getSource();
+        if (model.isCurrentPlayerTurn(pieceView.getModel().getOwner())) {
+            dragged = pieceView;
+            TileView origin = pieceView.getOrigin();
+            pieceView.startMove();
+            for (TileView r : view.getTileViews()) {
                 if (r != origin && !r.getModel().isLocked()) {
                     if (r.getModel().isNear(origin.getModel())) {
-                        if (r.getModel().getPiece() != null || !Cell.isCellAvailable(r.getModel())) {
+                        if (r.getModel().getPieceModel() != null || !TileModel.isCellAvailable(r.getModel())) {
                             r.setInvalidColor();
                         } else if (dragged.getOrigin().getModel().canMove(r.getModel())) {
                             r.setValidColor();

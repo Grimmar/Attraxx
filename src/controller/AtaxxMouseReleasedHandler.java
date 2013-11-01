@@ -2,11 +2,11 @@ package controller;
 
 import javafx.scene.input.MouseEvent;
 import model.AtaxxModel;
-import model.Cell;
-import model.Piece;
+import model.TileModel;
+import model.PieceModel;
 import view.Ataxx;
-import view.AtaxxPiece;
-import view.AtaxxTile;
+import view.PieceView;
+import view.TileView;
 
 public class AtaxxMouseReleasedHandler extends AtaxxAbstractHandler {
 
@@ -17,14 +17,14 @@ public class AtaxxMouseReleasedHandler extends AtaxxAbstractHandler {
     @Override
     public void handle(MouseEvent mouseEvent) {
         if (dragged != null) {
-            Cell originModel = dragged.getOrigin().getModel();
-            for (AtaxxTile r : view.getTiles()) {
+            TileModel originModel = dragged.getOrigin().getModel();
+            for (TileView r : view.getTileViews()) {
                 if (r != dragged.getOrigin() && !r.getModel().isLocked()) {
                     if (r.getModel().isNear(originModel))
                         r.clearColor();
                 }
             }
-            if (arrival == null || !Cell.isCellAvailable(arrival.getModel())
+            if (arrival == null || !TileModel.isCellAvailable(arrival.getModel())
                     || !originModel.canMove(arrival.getModel())) {
                 dragged.cancelMove();
             } else {
@@ -32,12 +32,12 @@ public class AtaxxMouseReleasedHandler extends AtaxxAbstractHandler {
                     model.move(originModel, arrival.getModel());
                     view.clearPieces();
 
-                    for (AtaxxTile r : view.getTiles()) {
-                        Piece piece = r.getModel().getPiece();
-                        if (piece != null) {
-                            AtaxxPiece pieceRegion = view.makeAtaxxPiece(piece, r);
-                            view.addPiece(pieceRegion);
-                            view.getPane().getChildren().add(pieceRegion);
+                    for (TileView r : view.getTileViews()) {
+                        PieceModel pieceModel = r.getModel().getPieceModel();
+                        if (pieceModel != null) {
+                            PieceView pieceViewRegion = view.makeAtaxxPiece(pieceModel, r);
+                            view.addPiece(pieceViewRegion);
+                            view.getPane().getChildren().add(pieceViewRegion);
                         }
 
                     }

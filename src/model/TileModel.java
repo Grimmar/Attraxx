@@ -7,15 +7,15 @@ package model;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
-public class Cell {
+public class TileModel {
     private ObjectProperty<Position> position;
     private boolean locked;
-    private Piece piece;
+    private PieceModel pieceModel;
 
-    public Cell(int x, int y){
+    public TileModel(int x, int y){
         locked = false;
         positionProperty().set(new Position(x, y));
-        piece = null;
+        pieceModel = null;
     }
 
     public ObjectProperty<Position> positionProperty() {
@@ -31,19 +31,19 @@ public class Cell {
         return position.get().getY();
     }
 
-    public static boolean isCellAvailable(Cell cell) {
-        return cell.piece == null && !cell.isLocked();
+    public static boolean isCellAvailable(TileModel cell) {
+        return cell.pieceModel == null && !cell.isLocked();
     }
 
-    public boolean isNear(Cell c) {
+    public boolean isNear(TileModel c) {
         return isNear(c, 1) || isNear(c, 2);
     }
 
-    public boolean isNear(Cell c, int range) {
+    public boolean isNear(TileModel c, int range) {
         return position.get().isNear(c.position.get(), range);
     }
 
-    public boolean canMove(Cell c){
+    public boolean canMove(TileModel c){
         return position.get().canMove(c.position.get());
     }
 
@@ -56,23 +56,23 @@ public class Cell {
     }
 
     public void addPiece(Owner o) {
-        piece = new Piece(o);
+        pieceModel = new PieceModel(o);
     }
 
-    public Piece getPiece() {
-        return piece;
+    public PieceModel getPieceModel() {
+        return pieceModel;
     }
 
     public void clear() {
-        piece = null;
+        pieceModel = null;
     }
 
     public Owner getOwner() {
-        return piece != null ? piece.getOwner() : null;
+        return pieceModel != null ? pieceModel.getOwner() : null;
     }
 
     public void setOwner(Owner owner) {
-        this.piece.setOwner(owner);
+        this.pieceModel.setOwner(owner);
     }
 
     private class Position {

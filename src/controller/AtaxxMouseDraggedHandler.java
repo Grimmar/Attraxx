@@ -3,7 +3,7 @@ package controller;
 import javafx.scene.input.MouseEvent;
 import model.AtaxxModel;
 import view.Ataxx;
-import view.AtaxxTile;
+import view.TileView;
 
 public class AtaxxMouseDraggedHandler extends AtaxxAbstractHandler {
 
@@ -19,7 +19,7 @@ public class AtaxxMouseDraggedHandler extends AtaxxAbstractHandler {
                 && x < view.getSceneWidth() && y < view.getSceneHeight()) {
             dragged.move(x, y);
         }
-        for (AtaxxTile r : view.getTiles()) {
+        for (TileView r : view.getTileViews()) {
             if (r.contains(x, y)) {
                 arrival = r;
             }
