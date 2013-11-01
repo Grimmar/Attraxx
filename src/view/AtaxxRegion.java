@@ -13,17 +13,21 @@ import model.Cell;
 public class AtaxxRegion extends Rectangle {
 
     private final Cell model;
-
+    private static final Color normal = Color.WHITESMOKE;
+    private static final Color locked = Color.BLACK;
+    private static final Color valid = Color.GREEN;
+    private static final Color invalid = Color.RED;
     public AtaxxRegion(Cell c) {
         if (c.isLocked()) {
-            setFill(Color.BLACK);
+            setFill(locked);
         } else {
-            setFill(Color.WHITE);
+            setFill(normal);
         }
         this.model = c;
         Light.Distant light = new Light.Distant();
         light.setAzimuth(-135);
         light.setElevation(30);
+
         setEffect(LightingBuilder.create().light(light).build());
     }
 
@@ -33,19 +37,19 @@ public class AtaxxRegion extends Rectangle {
 
     public void validate() {
         if (!model.isLocked()) {
-            setFill(Color.GREEN);
+            setFill(valid);
         }
     }
 
     public void invalidate() {
         if (!model.isLocked()) {
-            setFill(Color.RED);
+            setFill(invalid);
         }
     }
 
     public void clear() {
         if (!model.isLocked()) {
-            setFill(Color.WHITE);
+            setFill(normal);
         }
     }
 }
