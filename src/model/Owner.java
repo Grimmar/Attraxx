@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package model;
 
 import javafx.beans.property.ObjectProperty;
@@ -14,10 +10,10 @@ import javafx.scene.paint.RadialGradient;
  * @author David
  */
 public enum Owner {
-
-
-
-    BLUE(RadialGradient.valueOf("radial-gradient(center 50% 18%, radius 50%, reflect, blue, #0000CD 80%)")), RED(RadialGradient.valueOf("radial-gradient(center 50% 18%, radius 50%, reflect, red, #CD2626 80%)"));
+    BLUE(RadialGradient.valueOf("radial-gradient("
+            +"center 50% 18%, radius 50%, reflect, blue, #0000CD 80%)")),
+    RED(RadialGradient.valueOf("radial-gradient("
+            +"center 50% 18%, radius 50%, reflect, red, #CD2626 80%)"));
 
     private ObjectProperty<Paint> color;
 

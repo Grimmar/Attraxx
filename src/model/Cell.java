@@ -35,6 +35,10 @@ public class Cell {
         return cell.piece == null && !cell.isLocked();
     }
 
+    public boolean isNear(Cell c) {
+        return isNear(c, 1) || isNear(c, 2);
+    }
+
     public boolean isNear(Cell c, int range) {
         return position.get().isNear(c.position.get(), range);
     }

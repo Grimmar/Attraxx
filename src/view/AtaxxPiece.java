@@ -9,11 +9,11 @@ import model.Piece;
 
 public class AtaxxPiece extends Circle {
     private Piece piece;
-    private AtaxxRegion origin;
+    private AtaxxTile origin;
     private NumberBinding positionX = null;
     private NumberBinding positionY = null;
 
-    public AtaxxPiece(Piece piece, AtaxxRegion r) {
+    public AtaxxPiece(Piece piece, AtaxxTile r) {
         this.piece = piece;
         origin = r;
 
@@ -31,12 +31,7 @@ public class AtaxxPiece extends Circle {
         setEffect(ds);
     }
 
-    private void unbindCenter() {
-        centerXProperty().unbind();
-        centerYProperty().unbind();
-    }
-
-    public void startMoving() {
+    public void startMove() {
          unbindCenter();
     }
 
@@ -46,22 +41,23 @@ public class AtaxxPiece extends Circle {
         setCenterY(y);
     }
 
-    public void cancel() {
-        updatePosition(origin);
+    public void cancelMove() {
+        positionX = Bindings.selectInteger(origin.xProperty().add(origin.widthProperty().divide(2)));
+        positionY = Bindings.selectInteger(origin.yProperty().add(origin.widthProperty().divide(2)));
+        centerXProperty().bind(positionX);
+        centerYProperty().bind(positionY);
     }
 
-   private void updatePosition(AtaxxRegion r) {
-       positionX = Bindings.selectInteger(r.xProperty().add(r.widthProperty().divide(2)));
-       positionY = Bindings.selectInteger(r.yProperty().add(r.widthProperty().divide(2)));
-       centerXProperty().bind(positionX);
-       centerYProperty().bind(positionY);
-   }
+    private void unbindCenter() {
+        centerXProperty().unbind();
+        centerYProperty().unbind();
+    }
 
     public Piece getModel() {
         return piece;
     }
 
-    public AtaxxRegion getOrigin() {
+    public AtaxxTile getOrigin() {
         return origin;
     }
 }

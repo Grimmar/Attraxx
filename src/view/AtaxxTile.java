@@ -10,14 +10,15 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import model.Cell;
 
-public class AtaxxRegion extends Rectangle {
+public class AtaxxTile extends Rectangle {
 
     private final Cell model;
     private static final Color normal = Color.WHITESMOKE;
     private static final Color locked = Color.BLACK;
     private static final Color valid = Color.GREEN;
     private static final Color invalid = Color.RED;
-    public AtaxxRegion(Cell c) {
+
+    public AtaxxTile(Cell c) {
         if (c.isLocked()) {
             setFill(locked);
         } else {
@@ -35,21 +36,22 @@ public class AtaxxRegion extends Rectangle {
         return model;
     }
 
-    public void validate() {
+    public void setValidColor() {
         if (!model.isLocked()) {
             setFill(valid);
         }
     }
 
-    public void invalidate() {
+    public void setInvalidColor() {
         if (!model.isLocked()) {
             setFill(invalid);
         }
     }
 
-    public void clear() {
+    public void clearColor() {
         if (!model.isLocked()) {
             setFill(normal);
         }
     }
+
 }

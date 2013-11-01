@@ -16,6 +16,8 @@ public enum MenuEnum {
         menus = new HashMap<>();
         menus.put(FICHIER, new ArrayList<Item>(){{
             add(Item.NEW_GAME);
+            add(null);
+            add(Item.CLOSE);
         }});
     }
 
