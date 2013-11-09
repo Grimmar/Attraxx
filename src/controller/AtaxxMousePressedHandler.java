@@ -21,11 +21,13 @@ public class AtaxxMousePressedHandler extends AtaxxAbstractHandler {
             TileView origin = pieceView.getOrigin();
             pieceView.startMove();
             for (TileView r : view.getTileViews()) {
-                if (r != origin && !r.getModel().isLocked()) {
-                    if (r.getModel().isNear(origin.getModel())) {
-                        if (r.getModel().getPieceModel() != null || !TileModel.isCellAvailable(r.getModel())) {
+                if (r != origin) {
+                    if (r.getModel().isNear(origin.getModel()) && !r.getModel().isLocked()) {
+                        boolean canMoveTo = model.canMoveTo(dragged.getOrigin().getModel(), r.getModel());
+                        if ((r.getModel().getPieceModel() != null || !TileModel.isCellAvailable(r.getModel()))
+                                && canMoveTo) {
                             r.setInvalidColor();
-                        } else if (dragged.getOrigin().getModel().canMove(r.getModel())) {
+                        } else if (canMoveTo) {
                             r.setValidColor();
                         }
                     }

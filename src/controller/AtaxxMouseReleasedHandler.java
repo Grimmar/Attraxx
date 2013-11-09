@@ -25,7 +25,8 @@ public class AtaxxMouseReleasedHandler extends AtaxxAbstractHandler {
                 }
             }
             if (arrival == null || !TileModel.isCellAvailable(arrival.getModel())
-                    || !originModel.canMove(arrival.getModel())) {
+                    || !model.canMoveTo(originModel, arrival.getModel())
+                    || !originModel.isNear(arrival.getModel())) {
                 dragged.cancelMove();
             } else {
                 try {
@@ -39,9 +40,13 @@ public class AtaxxMouseReleasedHandler extends AtaxxAbstractHandler {
                             view.addPiece(pieceViewRegion);
                             view.getPane().getChildren().add(pieceViewRegion);
                         }
-
                     }
                     model.changePlayer();
+                    if (model.isGameOver()) {
+                        //TODO Afficher message de fin et vainqueur
+                    } else {
+                        //TODO if !canPlay switch owner
+                    }
                 } catch (IllegalAccessException ex) {
                 }
             }

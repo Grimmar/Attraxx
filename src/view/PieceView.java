@@ -13,15 +13,16 @@ public class PieceView extends Circle {
     private NumberBinding positionX = null;
     private NumberBinding positionY = null;
 
-    public PieceView(PieceModel pieceModel, TileView r) {
+    public PieceView(PieceModel pieceModel, TileView t) {
         this.pieceModel = pieceModel;
-        origin = r;
+        origin = t;
 
         fillProperty().bind(pieceModel.getOwner().colorProperty());
-        positionX = Bindings.selectDouble(r.xProperty().add(r.widthProperty().divide(2)));
-        positionY = Bindings.selectDouble(r.yProperty().add(r.widthProperty().divide(2)));
+        positionX = Bindings.selectDouble(t.xProperty().add(t.widthProperty().divide(2)));
+        positionY = Bindings.selectDouble(t.yProperty().add(t.widthProperty().divide(2)));
         centerXProperty().bind(positionX);
         centerYProperty().bind(positionY);
+        radiusProperty().bind(t.heightProperty().divide(2).subtract(10));
 
         DropShadow ds = new DropShadow();
         ds.setOffsetY(4.0f);

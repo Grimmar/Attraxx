@@ -15,50 +15,71 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import model.AtaxxModel;
 import model.PieceModel;
+import model.ai.Algorithm;
+import model.ai.MiniMax;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Ataxx extends Application {
 
-    private static final int BOARD_SIZE = 7;
-    private int numberOfLock;
-    private int startingPieces;
+    private static final int BOARD_DEFAULT_SIZE = 10;
+
     private AtaxxModel model;
     private List<PieceView> pieceViews;
     private List<TileView> tileViews;
-    private AnchorPane pane;
     private Scene scene;
+    private AnchorPane pane;
+    private int boardSize;
+    private int startingPieces;
+
+/*final Label clock = new Label();
+final DateFormat format = DateFormat.getInstance();
+final Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
+     @Override
+     public void handle(ActionEvent event) {
+          final Calendar cal = Calendar.getInstance();
+          clock.setText(format.format(cal.getTime());
+     }
+});
+timeline.setCycleCount(Animation.INDEFINITE);
+timeline.play();*/
 
     public static void main(String[] args) {
-        launch(args);
+        //launch(args);
+
+        int startingPieces = AtaxxModel.TWO_TOKENS;
+        int boardSize = BOARD_DEFAULT_SIZE;
+        AtaxxModel model = AtaxxModel.getInstance();
+        model.generate(boardSize, startingPieces);
+        Algorithm o = new MiniMax(4);
+        o.buildTree(model);
     }
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Menu Sample");
-        scene = new Scene(new VBox(), 600, 800);
-        scene.setFill(Color.OLDLACE);
+        primaryStage.setTitle("Ataxx");
+        scene = new Scene(new VBox(), 600, 620);
 
         createModel();
         createEventHandlers();
         createAndInstallMenuBar(scene);
         createView(scene);
+
         primaryStage.setScene(scene);
         primaryStage.sizeToScene();
         primaryStage.show();
     }
 
     private void createModel() {
-        numberOfLock = 1;
         startingPieces = AtaxxModel.TWO_TOKENS;
+        boardSize = BOARD_DEFAULT_SIZE;
         model = AtaxxModel.getInstance();
-        model.generate(BOARD_SIZE, startingPieces, numberOfLock);
+        model.generate(boardSize, startingPieces);
     }
 
     private void createView(Scene scene) {
@@ -66,14 +87,16 @@ public class Ataxx extends Application {
         tileViews = new ArrayList<>();
 
         pane = new AnchorPane();
-        initBoard(BOARD_SIZE);
+        initBoard(boardSize);
 
         ((VBox) scene.getRoot()).getChildren().add(pane);
     }
 
     private void initBoard(int size) {
-        NumberBinding rectsAreaSize = Bindings.min(scene.heightProperty(),
+        NumberBinding rectsAreaSize = Bindings.min(
+                scene.heightProperty().subtract(20),
                 scene.widthProperty());
+
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 TileView r = new TileView(model.get(i, j));
@@ -122,9 +145,8 @@ public class Ataxx extends Application {
                 pieceViews.clear();
                 tileViews.clear();
                 pane.getChildren().clear();
-                int size = BOARD_SIZE;
-                model.generate(size, startingPieces, numberOfLock);
-                initBoard(size);
+                model.generate(boardSize, startingPieces);
+                initBoard(boardSize);
             }
         });
         ItemEnum.CLOSE.setEvent(new EventHandler<ActionEvent>() {
@@ -137,7 +159,6 @@ public class Ataxx extends Application {
 
     public PieceView makeAtaxxPiece(PieceModel p, TileView t) {
         PieceView pieceView = new PieceView(p, t);
-        pieceView.radiusProperty().bind(t.heightProperty().divide(2).subtract(10));
         pieceView.setOnMousePressed(new AtaxxMousePressedHandler(model, this));
         pieceView.setOnMouseDragged(new AtaxxMouseDraggedHandler(model, this));
         pieceView.setOnMouseReleased(new AtaxxMouseReleasedHandler(model, this));

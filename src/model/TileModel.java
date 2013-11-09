@@ -1,16 +1,12 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package model;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
-public class TileModel {
+public class TileModel implements Cloneable {
     private ObjectProperty<Position> position;
-    private boolean locked;
     private PieceModel pieceModel;
+    private boolean locked;
 
     public TileModel(int x, int y){
         locked = false;
@@ -43,7 +39,7 @@ public class TileModel {
         return position.get().isNear(c.position.get(), range);
     }
 
-    public boolean canMove(TileModel c){
+    public boolean canMoveTo(TileModel c){
         return position.get().canMove(c.position.get());
     }
 
@@ -75,50 +71,13 @@ public class TileModel {
         this.pieceModel.setOwner(owner);
     }
 
-    private class Position {
-
-        private final int x;
-        private final int y;
-
-        public Position(int x, int y){
-            this.x = x;
-            this.y = y;
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        TileModel model = new TileModel(getPositionX(), getPositionY());
+        if (pieceModel != null) {
+            model.pieceModel = (PieceModel) pieceModel.clone();
         }
-
-        public int getX() {
-            return x;
-        }
-
-        public int getY() {
-            return y;
-        }
-
-        public boolean isNear(Position p, int range){
-            if(Math.abs(x - p.x) <= range && Math.abs(y - p.y) <= range){
-                return true;
-            }
-            return false;
-        }
-
-        public boolean canMove(Position p){
-            if(x == p.x || y == p.y){
-                return true;
-            } else if(((x+1) == p.x && (y+1) == p.y)
-                    || ((x+1) == p.x && (y-1) == p.y)
-                    || ((x-1) == p.x && (y+1) == p.y)
-                    || ((x-1) == p.x && (y-1) == p.y)) {
-                return true;
-            } else if(((x+2) == p.x && (y+2) == p.y)
-                    || ((x-2) == p.x && (y+2) == p.y)
-                    || ((x+2) == p.x && (y-2) == p.y)
-                    || ((x-2) == p.x && (y-2) == p.y)){
-                return true;
-            }
-            return false;
-        }
-        @Override
-        public String toString() {
-            return "Position{" + "x=" + x + ", y=" + y + '}';
-        }
+        model.locked = locked;
+        return model;
     }
 }

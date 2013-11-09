@@ -1,5 +1,8 @@
 package model;
 
+import model.board.Board;
+import model.board.DefaultBoard;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,23 +10,21 @@ import java.util.List;
  *
  * @author David
  */
-public class AtaxxModel {
-
+public class AtaxxModel implements Cloneable {
     public static final int SINGLE_TOKEN = 1;
     public static final int TWO_TOKENS = 2;
 
-    public static final int NO_VOID_CELLS = 0;
-
     private static AtaxxModel instance;
-    private List<List<TileModel>> board;
-    private int numberOfPlay;
+    private List<List<TileModel>> tiles;
     private Owner currentPlayer;
+    private Board board;
     private int boardSize;
     private int blueTokens;
     private int redTokens;
+    private int numberOfPlay;
 
     private AtaxxModel() {
-        board = new ArrayList<>();
+        tiles = new ArrayList<>();
     }
 
     public static AtaxxModel getInstance() {
@@ -33,31 +34,30 @@ public class AtaxxModel {
         return instance;
     }
 
-    public void generate(int size) {
-       generate(size, SINGLE_TOKEN);
-    }
-
     public void generate(int size, int startingPieces) {
-        generate(size, startingPieces, NO_VOID_CELLS);
-    }
-
-    public void generate(int size, int startingPieces, int voidCells) {
-        board.clear();
-        numberOfPlay = 1;
         boardSize = size;
-        currentPlayer = Owner.BLUE;
+        if (board == null) {
+            board = new DefaultBoard();
+        }
+        clear();
+
         for (int i = 0; i < size; i++) {
-            board.add(new ArrayList<TileModel>());
+            tiles.add(new ArrayList<TileModel>());
             for (int j = 0; j < size; j++) {
-                board.get(i).add(new TileModel(i, j));
+                TileModel tile = new TileModel(i, j);
+                if(board.isLocked(i, j)) {
+                    tile.lock();
+                }
+                tiles.get(i).add(tile);
             }
         }
         setOwnership(size, startingPieces);
+    }
 
-        if (voidCells > NO_VOID_CELLS) {
-            //TODO Algorithme de génération des cases vides
-            board.get(2).get(2).lock();
-        }
+    private void clear() {
+        tiles.clear();
+        numberOfPlay = 1;
+        currentPlayer = Owner.BLUE;
     }
 
     private void setOwnership(int size, int startingPieces) {
@@ -75,7 +75,8 @@ public class AtaxxModel {
                 get(size - 1, size - 1).addPiece(Owner.RED);
         }
     }
-    //TODO ajouter gestion des coups identiques plusieurs fois de suite
+
+    //TODO
     public boolean isGameOver() {
         return blueTokens == 0 || redTokens == 0;
     }
@@ -90,10 +91,11 @@ public class AtaxxModel {
     }
 
     public TileModel get(int x, int y) {
-        if (x < 0 && x >= board.size() && y < 0 && y >= board.size()) {
-            throw new IllegalArgumentException();
+        if (x < 0 || x >= tiles.size() || y < 0 || y >= tiles.size()) {
+            //throw new IndexOutOfBoundsException();
+            return null;
         }
-        return board.get(x).get(y);
+        return tiles.get(x).get(y);
     }
 
     public void move(TileModel begin, TileModel end) throws IllegalAccessException {
@@ -102,30 +104,75 @@ public class AtaxxModel {
             int endX = end.getPositionX();
             int endY = end.getPositionY();
             if (begin.isNear(end, 1)) {
-                board.get(endX).get(endY).addPiece(begin.getOwner());
+                tiles.get(endX).get(endY).addPiece(begin.getOwner());
                 end.addPiece(begin.getOwner());
                 spread(end);
                 canMove = true;
-            } else if (begin.isNear(end, 2) && begin.canMove(end)) {
-                board.get(endX).get(endY).addPiece(begin.getOwner());
-                board.get(begin.getPositionX()).get(begin.getPositionY()).clear();
-                spread(board.get(endX).get(endY));
+            } else if (begin.isNear(end, 2) && canMoveTo(begin, end)) {
+                tiles.get(endX).get(endY).addPiece(begin.getOwner());
+                tiles.get(begin.getPositionX()).get(begin.getPositionY()).clear();
+                spread(tiles.get(endX).get(endY));
                 canMove = true;
             }
         }
         if (canMove) {
-            updateTokenNumber();
+            updateTokens();
         } else {
             throw new IllegalAccessException();
         }
     }
 
-    private void updateTokenNumber() {
+    public boolean canMoveTo(TileModel t1, TileModel t2) {
+        int i, j;
+        if (t1.getPositionX() > t2.getPositionX()) {
+            i = t1.getPositionX() - 1;
+        }  else if (t1.getPositionX() < t2.getPositionX()) {
+            i = t1.getPositionX() + 1;
+        } else {
+            i = t1.getPositionX();
+        }
+        if (t1.getPositionY() > t2.getPositionY()) {
+            j = t1.getPositionY() - 1;
+        } else if (t1.getPositionY() < t2.getPositionY()) {
+            j = t1.getPositionY() + 1;
+        } else {
+            j = t1.getPositionY();
+        }
+      TileModel middleTile = get(i, j);
+      return t1.canMoveTo(t2) && TileModel.isCellAvailable(middleTile);
+    }
+
+    public List<TileModel> getPossibleMoves(TileModel source) {
+        List<TileModel> tiles = new ArrayList<>();
+        int x = source.getPositionX();
+        int y = source.getPositionY();
+        for (int i = x - 2; i < x + 2; i++) {
+            for (int j = y - 2; j < y + 2; j++) {
+                TileModel tile = get(i, j);
+                if (tile != null && isMoveValid(source, tile)) {
+                    tiles.add(tile);
+                    System.out.println(tile.getPositionX() + " " + tile.getPositionY());
+                }
+            }
+        }
+        return tiles;
+    }
+
+    public boolean isMoveValid(TileModel source, TileModel destination) {
+        return (destination.isNear(source)) && !destination.isLocked() && canMoveTo(source, destination);
+    }
+
+    public boolean isMoveInvalid(TileModel source, TileModel destination) {
+        return (destination.getPieceModel() != null || !TileModel.isCellAvailable(destination))
+                && canMoveTo(source, destination);
+    }
+
+    private void updateTokens() {
         blueTokens = 0;
         redTokens = 0;
-        for (int i = 0; i < board.size(); i++) {
-            for (int j = 0; j < board.size(); j++) {
-                TileModel c = board.get(i).get(j);
+        for (int i = 0; i < tiles.size(); i++) {
+            for (int j = 0; j < tiles.size(); j++) {
+                TileModel c = tiles.get(i).get(j);
                 if (Owner.BLUE == c.getOwner()) {
                     blueTokens++;
                 }
@@ -145,12 +192,10 @@ public class AtaxxModel {
                 if (i < 0 || j < 0 || i >= boardSize || j >= boardSize) {
                     continue;
                 }
-                TileModel current = board.get(i).get(j);
+                TileModel current = tiles.get(i).get(j);
                 if (current.getOwner() != c.getOwner()
-                        && !current.isLocked()
                         && current.getPieceModel() != null) {
                     current.setOwner(c.getOwner());
-                    //spread(current);
                 }
             }
         }
@@ -177,14 +222,49 @@ public class AtaxxModel {
         return redTokens;
     }
 
-    //TODO Remove
+    public int getBoardSize() {
+        return boardSize;
+    }
+
+    @Override
+    public Object clone() {
+        AtaxxModel model = null;
+        try {
+            model = (AtaxxModel) super.clone();
+            List<List<TileModel>> tiles = new ArrayList<>();
+            for(int i = 0; i < boardSize; i++){
+                List<TileModel> tile = new ArrayList<>();
+                for(int j = 0;j < boardSize; j++){
+                    tile.add(j, (TileModel)model.get(i,j).clone());
+                }
+                tiles.add(i, tile);
+            }
+        } catch(CloneNotSupportedException cnse) {
+            cnse.printStackTrace(System.err);
+        }
+
+
+        model.tiles = new ArrayList<>(tiles);
+        model.currentPlayer = currentPlayer;
+        return model;
+    }
+
     public void print() {
-        for (List<TileModel> lc : board) {
-            for (TileModel c : lc) {
-                System.out.print(c + "   ");
+        for (int i = 0; i < boardSize; i++) {
+            System.out.print("|");
+            for (int j = 0; j < boardSize; j++) {
+                if (get(i, j).getOwner() == Owner.RED) {
+                    System.out.print("R|");
+                }  else if (get(i, j).getOwner() == Owner.BLUE) {
+                    System.out.print("B|");
+                }  else {
+                    System.out.print(" |");
+                }
+
             }
             System.out.println();
         }
+        System.out.println("++++++++++++++++++++++++++++++++++++++++++++++");
     }
-
 }
+

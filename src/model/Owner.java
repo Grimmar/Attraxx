@@ -10,6 +10,7 @@ import javafx.scene.paint.RadialGradient;
  * @author David
  */
 public enum Owner {
+
     BLUE(RadialGradient.valueOf("radial-gradient("
             +"center 50% 18%, radius 50%, reflect, blue, #0000CD 80%)")),
     RED(RadialGradient.valueOf("radial-gradient("

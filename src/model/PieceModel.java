@@ -3,7 +3,7 @@ package model;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
-public class PieceModel {
+public class PieceModel implements Cloneable {
     private ObjectProperty<Owner> owner;
 
     public PieceModel(Owner o) {
@@ -15,4 +15,9 @@ public class PieceModel {
     }
     public final Owner getOwner() { return this.ownerProperty().get(); }
     public final void setOwner(Owner o) { this.ownerProperty().set(o); }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new PieceModel(owner.get());
+    }
 }
