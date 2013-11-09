@@ -146,8 +146,8 @@ public class AtaxxModel implements Cloneable {
         List<TileModel> tiles = new ArrayList<>();
         int x = source.getPositionX();
         int y = source.getPositionY();
-        for (int i = x - 2; i < x + 2; i++) {
-            for (int j = y - 2; j < y + 2; j++) {
+        for (int i = (x - 2); i <= (x + 2); i++) {
+            for (int j = (y - 2); j <= (y + 2); j++) {
                 TileModel tile = get(i, j);
                 if (tile != null && isMoveValid(source, tile)) {
                     tiles.add(tile);
@@ -229,22 +229,22 @@ public class AtaxxModel implements Cloneable {
     @Override
     public Object clone() {
         AtaxxModel model = null;
+        List<List<TileModel>> ts = new ArrayList<>();
         try {
             model = (AtaxxModel) super.clone();
-            List<List<TileModel>> tiles = new ArrayList<>();
+          
             for(int i = 0; i < boardSize; i++){
                 List<TileModel> tile = new ArrayList<>();
                 for(int j = 0;j < boardSize; j++){
                     tile.add(j, (TileModel)model.get(i,j).clone());
                 }
-                tiles.add(i, tile);
+                ts.add(i, tile);
             }
         } catch(CloneNotSupportedException cnse) {
             cnse.printStackTrace(System.err);
         }
 
-
-        model.tiles = new ArrayList<>(tiles);
+        model.tiles = new ArrayList<>(ts);
         model.currentPlayer = currentPlayer;
         return model;
     }
@@ -260,7 +260,6 @@ public class AtaxxModel implements Cloneable {
                 }  else {
                     System.out.print(" |");
                 }
-
             }
             System.out.println();
         }

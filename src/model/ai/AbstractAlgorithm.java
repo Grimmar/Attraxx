@@ -40,6 +40,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
                 }
             }
         }
+        System.out.println("case "+owner.name()+" : "+tiles); 
 
         for (TileModel tile : tiles) {
             List<TileModel> possibleMoves = model.getPossibleMoves(tile);
