@@ -56,7 +56,7 @@ public class Ataxx extends Application {
         int boardSize = BOARD_DEFAULT_SIZE;
         AtaxxModel model = AtaxxModel.getInstance();
         model.generate(boardSize, startingPieces);
-        Algorithm o = new MiniMax(4);
+        Algorithm o = new MiniMax(2);
         o.buildTree(model);
         System.out.println(o.getRoot());
 

@@ -265,6 +265,5 @@ public class AtaxxModel implements Cloneable {
             }
             System.out.println();
         }
-        System.out.println("++++++++++++++++++++++++++++++++++++++++++++++");
     }
 }

@@ -49,15 +49,15 @@ public class TreeNode implements Node {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Value ").append(value).append("\n");
-        if(tile != null){
-        sb.append("Position (").append(tile.getPositionX()).append(" ; ").append(tile.getPositionY()).append(")");
-        sb.append("Owner ").append(tile.getOwner());
+        if (tile != null) {
+            sb.append("Position (").append(tile.getPositionX()).append(" ; ").append(tile.getPositionY()).append(")");
+            sb.append("Owner ").append(tile.getOwner());
         }
-        for(Node d : children){
+        for (Node d : children) {
             sb.append(" ");
             sb.append(d.toString());
         }
-        sb.append("\n");
+        //sb.append("\n");
         return sb.toString();    //To change body of overridden methods use File | Settings | File Templates.
     }
 }

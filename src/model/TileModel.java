@@ -76,7 +76,6 @@ public class TileModel implements Cloneable {
         TileModel model = new TileModel(getPositionX(), getPositionY());
         if (this.pieceModel != null) {
             model.pieceModel = (PieceModel) this.pieceModel.clone();
-            
         }
         model.locked = locked;
         return model;
