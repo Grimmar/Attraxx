@@ -11,6 +11,7 @@ import java.util.List;
  * @author David
  */
 public class AtaxxModel implements Cloneable {
+
     public static final int SINGLE_TOKEN = 1;
     public static final int TWO_TOKENS = 2;
 
@@ -29,7 +30,7 @@ public class AtaxxModel implements Cloneable {
 
     public static AtaxxModel getInstance() {
         if (instance == null) {
-           instance = new AtaxxModel();
+            instance = new AtaxxModel();
         }
         return instance;
     }
@@ -45,7 +46,7 @@ public class AtaxxModel implements Cloneable {
             tiles.add(new ArrayList<TileModel>());
             for (int j = 0; j < size; j++) {
                 TileModel tile = new TileModel(i, j);
-                if(board.isLocked(i, j)) {
+                if (board.isLocked(i, j)) {
                     tile.lock();
                 }
                 tiles.get(i).add(tile);
@@ -61,7 +62,7 @@ public class AtaxxModel implements Cloneable {
     }
 
     private void setOwnership(int size, int startingPieces) {
-        switch(startingPieces) {
+        switch (startingPieces) {
             case TWO_TOKENS:
                 get(0, 0).addPiece(Owner.BLUE);
                 get(size - 1, size - 1).addPiece(Owner.BLUE);
@@ -118,7 +119,7 @@ public class AtaxxModel implements Cloneable {
         if (canMove) {
             updateTokens();
         } else {
-            throw new IllegalAccessException();
+            throw new IllegalAccessException("Error in move");
         }
     }
 
@@ -126,7 +127,7 @@ public class AtaxxModel implements Cloneable {
         int i, j;
         if (t1.getPositionX() > t2.getPositionX()) {
             i = t1.getPositionX() - 1;
-        }  else if (t1.getPositionX() < t2.getPositionX()) {
+        } else if (t1.getPositionX() < t2.getPositionX()) {
             i = t1.getPositionX() + 1;
         } else {
             i = t1.getPositionX();
@@ -138,24 +139,24 @@ public class AtaxxModel implements Cloneable {
         } else {
             j = t1.getPositionY();
         }
-      TileModel middleTile = get(i, j);
-      return t1.canMoveTo(t2) && TileModel.isCellAvailable(middleTile);
+        TileModel middleTile = get(i, j);
+        return t1.canMoveTo(t2) && TileModel.isCellAvailable(middleTile);
     }
 
     public List<TileModel> getPossibleMoves(TileModel source) {
-        List<TileModel> tiles = new ArrayList<>();
+        List<TileModel> ts = new ArrayList<>();
         int x = source.getPositionX();
         int y = source.getPositionY();
         for (int i = (x - 2); i <= (x + 2); i++) {
             for (int j = (y - 2); j <= (y + 2); j++) {
                 TileModel tile = get(i, j);
                 if (tile != null && isMoveValid(source, tile)) {
-                    tiles.add(tile);
-                    System.out.println(tile.getPositionX() + " " + tile.getPositionY());
+                    ts.add(tile);
+                    //System.out.println(tile.getPositionX() + " " + tile.getPositionY());
                 }
             }
         }
-        return tiles;
+        return ts;
     }
 
     public boolean isMoveValid(TileModel source, TileModel destination) {
@@ -232,19 +233,20 @@ public class AtaxxModel implements Cloneable {
         List<List<TileModel>> ts = new ArrayList<>();
         try {
             model = (AtaxxModel) super.clone();
-          
-            for(int i = 0; i < boardSize; i++){
+            for (int i = 0; i < boardSize; i++) {
                 List<TileModel> tile = new ArrayList<>();
-                for(int j = 0;j < boardSize; j++){
-                    tile.add(j, (TileModel)model.get(i,j).clone());
+                for (int j = 0; j < boardSize; j++) {
+                    tile.add(j, (TileModel) this.get(i, j).clone());
+                    //System.out.println("clone "+tile.get(j));
+                    //System.out.println("this "+ this.get(i,j));
                 }
                 ts.add(i, tile);
             }
-        } catch(CloneNotSupportedException cnse) {
+        } catch (CloneNotSupportedException cnse) {
             cnse.printStackTrace(System.err);
         }
 
-        model.tiles = new ArrayList<>(ts);
+        model.tiles = ts;
         model.currentPlayer = currentPlayer;
         return model;
     }
@@ -255,9 +257,9 @@ public class AtaxxModel implements Cloneable {
             for (int j = 0; j < boardSize; j++) {
                 if (get(i, j).getOwner() == Owner.RED) {
                     System.out.print("R|");
-                }  else if (get(i, j).getOwner() == Owner.BLUE) {
+                } else if (get(i, j).getOwner() == Owner.BLUE) {
                     System.out.print("B|");
-                }  else {
+                } else {
                     System.out.print(" |");
                 }
             }
@@ -266,4 +268,3 @@ public class AtaxxModel implements Cloneable {
         System.out.println("++++++++++++++++++++++++++++++++++++++++++++++");
     }
 }
-

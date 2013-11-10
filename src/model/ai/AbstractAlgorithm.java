@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractAlgorithm implements Algorithm {
+
     private Node root;
     private int depth;
 
@@ -24,12 +25,12 @@ public abstract class AbstractAlgorithm implements Algorithm {
     }
 
     private void computeTree(AtaxxModel model, Owner owner, Node node, int depth) {
-        System.out.println("depth:" + depth);
-        model.print();
+        //System.out.println("depth:" + depth);
+        //model.print();
         if (depth >= this.depth) {
             return;
         }
-
+        //model.print();
         int size = model.getBoardSize();
         List<TileModel> tiles = new ArrayList<>();
         for (int i = 0; i < size; i++) {
@@ -40,7 +41,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
                 }
             }
         }
-        System.out.println("case "+owner.name()+" : "+tiles); 
+        //System.out.println("case "+owner.name()+" : "+tiles); 
 
         for (TileModel tile : tiles) {
             List<TileModel> possibleMoves = model.getPossibleMoves(tile);
@@ -48,12 +49,13 @@ public abstract class AbstractAlgorithm implements Algorithm {
                 Node n = new TreeNode(t);
                 try {
                     AtaxxModel clone = (AtaxxModel) model.clone();
-                    clone.move(tile, t);
+                    clone.move(clone.get(tile.getPositionX(), tile.getPositionY()), clone.get(t.getPositionX(), t.getPositionY()));
                     computeTree(clone, owner.opposite(), n, depth + 1);
                     if (depth + 1 == this.depth) {
                         n.setValue(clone.getRedTokens());
                     }
                 } catch (IllegalAccessException e) {
+                    System.out.println(e.getMessage());
                 }
                 node.addSuccessor(n);
             }

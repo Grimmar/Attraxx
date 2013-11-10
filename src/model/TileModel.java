@@ -74,8 +74,9 @@ public class TileModel implements Cloneable {
     @Override
     public Object clone() throws CloneNotSupportedException {
         TileModel model = new TileModel(getPositionX(), getPositionY());
-        if (pieceModel != null) {
-            model.pieceModel = (PieceModel) pieceModel.clone();
+        if (this.pieceModel != null) {
+            model.pieceModel = (PieceModel) this.pieceModel.clone();
+            
         }
         model.locked = locked;
         return model;

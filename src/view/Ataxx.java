@@ -24,6 +24,8 @@ import model.ai.MiniMax;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Ataxx extends Application {
 
@@ -37,20 +39,18 @@ public class Ataxx extends Application {
     private int boardSize;
     private int startingPieces;
 
-/*final Label clock = new Label();
-final DateFormat format = DateFormat.getInstance();
-final Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
+    /*final Label clock = new Label();
+     final DateFormat format = DateFormat.getInstance();
+     final Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
      @Override
      public void handle(ActionEvent event) {
-          final Calendar cal = Calendar.getInstance();
-          clock.setText(format.format(cal.getTime());
+     final Calendar cal = Calendar.getInstance();
+     clock.setText(format.format(cal.getTime());
      }
-});
-timeline.setCycleCount(Animation.INDEFINITE);
-timeline.play();*/
-
+     });
+     timeline.setCycleCount(Animation.INDEFINITE);
+     timeline.play();*/
     public static void main(String[] args) {
-        //launch(args);
 
         int startingPieces = AtaxxModel.TWO_TOKENS;
         int boardSize = BOARD_DEFAULT_SIZE;
@@ -58,6 +58,8 @@ timeline.play();*/
         model.generate(boardSize, startingPieces);
         Algorithm o = new MiniMax(4);
         o.buildTree(model);
+        System.out.println(o.getRoot());
+
     }
 
     @Override
