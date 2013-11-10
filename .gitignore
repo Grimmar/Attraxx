@@ -4,3 +4,11 @@ nbprojects/
 build.xml
 manifest.mf
 *.iml
+/Attraxx/nbproject/private/
+/Attraxx/build/
+/Attraxx/dist/
+/Ataxx/nbproject/private/
+/Ataxx/build/
+/Ataxx/dist/
+/Ataxx/
+/Attraxx/
