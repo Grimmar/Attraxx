@@ -82,6 +82,7 @@ public class AtaxxModel implements Cloneable {
         return blueTokens == 0 || redTokens == 0;
     }
 
+    //TODO
     public Owner getWinner() {
         if (blueTokens == 0) {
             return Owner.RED;
@@ -101,9 +102,11 @@ public class AtaxxModel implements Cloneable {
 
     public void move(TileModel begin, TileModel end) throws IllegalAccessException {
         boolean canMove = false;
+        int endX = end.getPositionX();
+        int endY = end.getPositionY();
         if (TileModel.isCellAvailable(end)) {
-            int endX = end.getPositionX();
-            int endY = end.getPositionY();
+
+
             if (begin.isNear(end, 1)) {
                 tiles.get(endX).get(endY).addPiece(begin.getOwner());
                 end.addPiece(begin.getOwner());
@@ -149,10 +152,11 @@ public class AtaxxModel implements Cloneable {
         int y = source.getPositionY();
         for (int i = (x - 2); i <= (x + 2); i++) {
             for (int j = (y - 2); j <= (y + 2); j++) {
-                TileModel tile = get(i, j);
-                if (tile != null && isMoveValid(source, tile)) {
-                    ts.add(tile);
-                    //System.out.println(tile.getPositionX() + " " + tile.getPositionY());
+                if (!(i < 0 ||j <0 || i >= boardSize ||j >= boardSize )) {
+                    TileModel tile = get(i, j);
+                    if (isMoveValid(source, tile) && TileModel.isCellAvailable(tile)) {
+                        ts.add(tile);
+                    }
                 }
             }
         }
@@ -160,13 +164,15 @@ public class AtaxxModel implements Cloneable {
     }
 
     public boolean isMoveValid(TileModel source, TileModel destination) {
-        return (destination.isNear(source)) && !destination.isLocked() && canMoveTo(source, destination);
-    }
-
-    public boolean isMoveInvalid(TileModel source, TileModel destination) {
-        return (destination.getPieceModel() != null || !TileModel.isCellAvailable(destination))
+        return (destination.isNear(source))
+                && !destination.isLocked()
                 && canMoveTo(source, destination);
     }
+
+
+
+
+
 
     private void updateTokens() {
         blueTokens = 0;

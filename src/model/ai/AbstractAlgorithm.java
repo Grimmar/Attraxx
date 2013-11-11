@@ -25,14 +25,9 @@ public abstract class AbstractAlgorithm implements Algorithm {
     }
 
     private void computeTree(AtaxxModel model, Owner owner, Node node, int depth) {
-        //System.out.println("depth:" + depth);
-        //model.print();
         if (depth >= this.depth) {
             return;
         }
-        //System.out.println("Owner " + owner);
-        //System.out.println("depth:" + depth);
-        //model.print();
         int size = model.getBoardSize();
         List<TileModel> tiles = new ArrayList<>();
         for (int i = 0; i < size; i++) {
@@ -50,7 +45,8 @@ public abstract class AbstractAlgorithm implements Algorithm {
                 Node n = new TreeNode(tile);
                 try {
                     AtaxxModel clone = (AtaxxModel) model.clone();
-                    clone.move(clone.get(tile.getPositionX(), tile.getPositionY()), clone.get(t.getPositionX(), t.getPositionY()));
+                    clone.move(clone.get(tile.getPositionX(), tile.getPositionY()),
+                            clone.get(t.getPositionX(), t.getPositionY()));
                     if (depth + 1 == this.depth) {
                         n.setValue(clone.getRedTokens());
                     } else {

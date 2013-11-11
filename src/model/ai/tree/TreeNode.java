@@ -57,7 +57,6 @@ public class TreeNode implements Node {
             sb.append(" ");
             sb.append(d.toString());
         }
-        //sb.append("\n");
-        return sb.toString();    //To change body of overridden methods use File | Settings | File Templates.
+        return sb.toString();
     }
 }

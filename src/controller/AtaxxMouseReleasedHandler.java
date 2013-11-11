@@ -19,9 +19,8 @@ public class AtaxxMouseReleasedHandler extends AtaxxAbstractHandler {
         if (dragged != null) {
             TileModel originModel = dragged.getOrigin().getModel();
             for (TileView r : view.getTileViews()) {
-                if (r != dragged.getOrigin() && !r.getModel().isLocked()) {
-                    if (r.getModel().isNear(originModel))
-                        r.clearColor();
+                if (!r.getModel().isLocked()) {
+                    r.clearColor();
                 }
             }
             if (arrival == null || !TileModel.isCellAvailable(arrival.getModel())
