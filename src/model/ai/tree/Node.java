@@ -1,6 +1,7 @@
 package model.ai.tree;
 
 import java.util.List;
+import model.TileModel;
 
 public interface Node {
 
@@ -11,4 +12,16 @@ public interface Node {
     void addSuccessor(Node n);
 
     void setValue(int tokens);
+    
+    int getValue();
+    
+    Node getParent();
+    
+    boolean isMax();
+    
+    void setParent(Node parent);
+    
+    TileModel getTile();
+    
+    TileModel getTileEnd();
 }

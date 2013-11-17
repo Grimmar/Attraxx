@@ -1,12 +1,19 @@
 package model.ai;
 
 import model.AtaxxModel;
-import model.TileModel;
+
 import model.ai.tree.Node;
 
 public interface Algorithm {
-    TileModel run(Node s);
+    
+    Node run(Node s);
+    
     void buildTree(AtaxxModel model);
 
     Node getRoot();
+    
+    Node Max(Node n1, Node n2);
+    
+    Node Min(Node n1, Node n2);
+    
 }

@@ -5,6 +5,10 @@ import model.board.DefaultBoard;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import model.ai.Algorithm;
+import model.ai.tree.Node;
 
 /**
  *
@@ -23,6 +27,7 @@ public class AtaxxModel implements Cloneable {
     private int blueTokens;
     private int redTokens;
     private int numberOfPlay;
+    private Algorithm a;
 
     private AtaxxModel() {
         tiles = new ArrayList<>();
@@ -169,11 +174,6 @@ public class AtaxxModel implements Cloneable {
                 && canMoveTo(source, destination);
     }
 
-
-
-
-
-
     private void updateTokens() {
         blueTokens = 0;
         redTokens = 0;
@@ -210,6 +210,18 @@ public class AtaxxModel implements Cloneable {
 
     public void changePlayer() {
         currentPlayer = currentPlayer.opposite();
+        if(currentPlayer == Owner.RED){
+            a.buildTree(this);
+            Node n = a.run(a.getRoot());
+            TileModel start = n.getTile();
+            TileModel end = n.getTileEnd();
+            try {
+                move(get(start.getPositionX(),start.getPositionY()), get(end.getPositionX(),end.getPositionY()));
+            } catch (IllegalAccessException ex) {
+                System.out.println("Oups ! fail");
+            }
+            changePlayer();
+        }
         numberOfPlay++;
     }
 
@@ -243,8 +255,6 @@ public class AtaxxModel implements Cloneable {
                 List<TileModel> tile = new ArrayList<>();
                 for (int j = 0; j < boardSize; j++) {
                     tile.add(j, (TileModel) this.get(i, j).clone());
-                    //System.out.println("clone "+tile.get(j));
-                    //System.out.println("this "+ this.get(i,j));
                 }
                 ts.add(i, tile);
             }
@@ -272,4 +282,10 @@ public class AtaxxModel implements Cloneable {
             System.out.println();
         }
     }
+
+    public void setA(Algorithm a) {
+        this.a = a;
+    }
+    
+    
 }

@@ -11,7 +11,7 @@ import java.util.List;
 
 public abstract class AbstractAlgorithm implements Algorithm {
 
-    private Node root;
+    protected Node root;
     private int depth;
 
     public AbstractAlgorithm(int depth) {
@@ -21,7 +21,10 @@ public abstract class AbstractAlgorithm implements Algorithm {
 
     @Override
     public void buildTree(AtaxxModel model) {
-        computeTree(model, Owner.BLUE, root, 0);
+        long start = System.nanoTime();
+        computeTree(model, Owner.RED, root, 0);
+        long duree = System.nanoTime() - start;
+        System.out.println("temps de création de l'arbre : "+duree +" en ns");
     }
 
     private void computeTree(AtaxxModel model, Owner owner, Node node, int depth) {
@@ -38,11 +41,12 @@ public abstract class AbstractAlgorithm implements Algorithm {
                 }
             }
         }
-        
+
         for (TileModel tile : tiles) {
             List<TileModel> possibleMoves = model.getPossibleMoves(tile);
+
             for (TileModel t : possibleMoves) {
-                Node n = new TreeNode(tile);
+                Node n = new TreeNode(tile, t);
                 try {
                     AtaxxModel clone = (AtaxxModel) model.clone();
                     clone.move(clone.get(tile.getPositionX(), tile.getPositionY()),
@@ -55,13 +59,31 @@ public abstract class AbstractAlgorithm implements Algorithm {
                 } catch (IllegalAccessException e) {
                     System.out.println(e.getMessage());
                 }
+                n.setParent(node);
                 node.addSuccessor(n);
             }
+
         }
     }
 
     @Override
     public Node getRoot() {
         return root;
+    }
+
+    @Override
+    public Node Max(Node n1, Node n2) {
+        if (n1.getValue() > n2.getValue()) {
+            return n1;
+        }
+        return n2;
+    }
+
+    @Override
+    public Node Min(Node n1, Node n2) {
+        if (n1.getValue() < n2.getValue()) {
+            return n1;
+        }
+        return n2;
     }
 }

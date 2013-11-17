@@ -43,13 +43,13 @@ public class Ataxx extends Application {
     private int startingPieces;
 
     public static void main(String[] args) {
-        int startingPieces = AtaxxModel.TWO_TOKENS;
+        /*int startingPieces = AtaxxModel.TWO_TOKENS;
         int boardSize = BOARD_DEFAULT_SIZE;
         AtaxxModel model = AtaxxModel.getInstance();
-        model.generate(boardSize, startingPieces);
-        Algorithm o = new MiniMax(4);
-        o.buildTree(model);
-        //System.out.println(o.getRoot());
+        model.generate(boardSize, startingPieces);*/
+        
+        //o.buildTree(model);
+        //o.run(o.getRoot());
         launch(args);
     }
 
@@ -91,6 +91,8 @@ public class Ataxx extends Application {
         startingPieces = AtaxxModel.TWO_TOKENS;
         boardSize = BOARD_DEFAULT_SIZE;
         model = AtaxxModel.getInstance();
+        Algorithm o = new MiniMax(3);
+        model.setA(o);
         model.generate(boardSize, startingPieces);
     }
 
