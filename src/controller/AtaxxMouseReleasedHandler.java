@@ -29,7 +29,10 @@ public class AtaxxMouseReleasedHandler extends AtaxxAbstractHandler {
                 dragged.cancelMove();
             } else {
                 try {
+                    System.out.println("Move bleu : "+originModel.getPositionX() + " , "+originModel.getPositionY()
+                    +" => "+arrival.getModel().getPositionX()+" , "+arrival.getModel().getPositionY());
                     model.move(originModel, arrival.getModel());
+                    
                     view.clearPieces();
 
                     for (TileView r : view.getTileViews()) {

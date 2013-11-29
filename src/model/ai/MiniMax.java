@@ -1,6 +1,5 @@
 package model.ai;
 
-import model.TileModel;
 import model.ai.tree.Node;
 import model.ai.tree.TreeNode;
 

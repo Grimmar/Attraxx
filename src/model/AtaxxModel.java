@@ -5,8 +5,6 @@ import model.board.DefaultBoard;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import model.ai.Algorithm;
 import model.ai.tree.Node;
 
@@ -27,7 +25,7 @@ public class AtaxxModel implements Cloneable {
     private int blueTokens;
     private int redTokens;
     private int numberOfPlay;
-    private Algorithm a;
+    private Algorithm algorithm;
 
     private AtaxxModel() {
         tiles = new ArrayList<>();
@@ -110,8 +108,6 @@ public class AtaxxModel implements Cloneable {
         int endX = end.getPositionX();
         int endY = end.getPositionY();
         if (TileModel.isCellAvailable(end)) {
-
-
             if (begin.isNear(end, 1)) {
                 tiles.get(endX).get(endY).addPiece(begin.getOwner());
                 end.addPiece(begin.getOwner());
@@ -209,10 +205,12 @@ public class AtaxxModel implements Cloneable {
     }
 
     public void changePlayer() {
+        this.print();
         currentPlayer = currentPlayer.opposite();
         if(currentPlayer == Owner.RED){
-            a.buildTree(this);
-            Node n = a.run(a.getRoot());
+            
+            algorithm.buildTree(this);
+            Node n = algorithm.run(algorithm.getRoot());
             TileModel start = n.getTile();
             TileModel end = n.getTileEnd();
             try {
@@ -239,6 +237,17 @@ public class AtaxxModel implements Cloneable {
 
     public int getRedTokens() {
         return redTokens;
+    }
+    
+    public int getTokens(Owner o){
+        updateTokens();
+        if(o.equals(Owner.BLUE)){
+            return blueTokens;
+        }
+        if(o.equals(Owner.RED)){
+            return redTokens;
+        }
+        return boardSize * boardSize - blueTokens - redTokens;
     }
 
     public int getBoardSize() {
@@ -283,8 +292,8 @@ public class AtaxxModel implements Cloneable {
         }
     }
 
-    public void setA(Algorithm a) {
-        this.a = a;
+    public void setAlgorithm(Algorithm a) {
+        this.algorithm = a;
     }
     
     

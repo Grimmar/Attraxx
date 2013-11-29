@@ -13,6 +13,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
 
     protected Node root;
     private int depth;
+    private int cpt = 0;
 
     public AbstractAlgorithm(int depth) {
         this.depth = depth;
@@ -24,7 +25,8 @@ public abstract class AbstractAlgorithm implements Algorithm {
         long start = System.nanoTime();
         computeTree(model, Owner.RED, root, 0);
         long duree = System.nanoTime() - start;
-        System.out.println("temps de création de l'arbre : "+duree +" en ns");
+        System.out.println("temps de création de l'arbre : " + duree + " en ns");
+        System.out.println("cpt : "+ cpt);
     }
 
     private void computeTree(AtaxxModel model, Owner owner, Node node, int depth) {
@@ -47,12 +49,13 @@ public abstract class AbstractAlgorithm implements Algorithm {
 
             for (TileModel t : possibleMoves) {
                 Node n = new TreeNode(tile, t);
+                cpt++;
                 try {
                     AtaxxModel clone = (AtaxxModel) model.clone();
                     clone.move(clone.get(tile.getPositionX(), tile.getPositionY()),
                             clone.get(t.getPositionX(), t.getPositionY()));
                     if (depth + 1 == this.depth) {
-                        n.setValue(clone.getRedTokens());
+                        n.setValue(clone.getTokens(Owner.RED) - clone.getTokens(Owner.BLUE));
                     } else {
                         computeTree(clone, owner.opposite(), n, depth + 1);
                     }
@@ -60,6 +63,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
                     System.out.println(e.getMessage());
                 }
                 n.setParent(node);
+                n.toString();
                 node.addSuccessor(n);
             }
 

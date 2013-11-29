@@ -43,13 +43,6 @@ public class Ataxx extends Application {
     private int startingPieces;
 
     public static void main(String[] args) {
-        /*int startingPieces = AtaxxModel.TWO_TOKENS;
-        int boardSize = BOARD_DEFAULT_SIZE;
-        AtaxxModel model = AtaxxModel.getInstance();
-        model.generate(boardSize, startingPieces);*/
-        
-        //o.buildTree(model);
-        //o.run(o.getRoot());
         launch(args);
     }
 
@@ -92,7 +85,7 @@ public class Ataxx extends Application {
         boardSize = BOARD_DEFAULT_SIZE;
         model = AtaxxModel.getInstance();
         Algorithm o = new MiniMax(3);
-        model.setA(o);
+        model.setAlgorithm(o);
         model.generate(boardSize, startingPieces);
     }
 
@@ -119,8 +112,8 @@ public class Ataxx extends Application {
 
     private void initBoard(Pane pane, int size) {
         NumberBinding gridSize = Bindings.min(
-                pane.heightProperty().subtract(20),
-                pane.widthProperty()).subtract(20);
+                pane.widthProperty().subtract(20),
+                pane.heightProperty().subtract(20));
 
         for (int i = 0; i < size; i++) {
             Text text = new Text(""+i);
@@ -145,14 +138,14 @@ public class Ataxx extends Application {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 TileView tileView = new TileView(model.get(i, j));
-                tileView.xProperty().bind(gridSize.multiply(i)
+                tileView.xProperty().bind(gridSize.multiply(j)
                         .divide(size).add(20));
-                tileView.yProperty().bind(gridSize.multiply(j)
+                tileView.yProperty().bind(gridSize.multiply(i)
                         .divide(size).add(20));
-                tileView.heightProperty().bind(gridSize.divide(size));
                 tileView.widthProperty().bind(tileView.heightProperty());
+                tileView.heightProperty().bind(gridSize.divide(size));
 
-                PieceModel pieceModel = model.get(i, j).getPieceModel();
+                PieceModel pieceModel = model.get(i,j).getPieceModel();
                 if (pieceModel != null) {
                     pieceViews.add(makeAtaxxPiece(pieceModel, tileView));
                 }
