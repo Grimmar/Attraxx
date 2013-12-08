@@ -4,7 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
 public enum ItemEnum {
-    NEW_GAME("Nouvelle partie"), CLOSE("Fermer");
+    NEW_GAME("Nouvelle partie"), CLOSE("Fermer"), GAME("Mode de jeu"), BOARD("Plateau"), HELP("Aide");
     private final String name;
     private EventHandler<ActionEvent> event;
     ItemEnum(String name) {

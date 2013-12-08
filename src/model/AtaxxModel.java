@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  *
- * @author David
+ *
  */
 public class AtaxxModel implements Cloneable {
 
@@ -25,6 +25,7 @@ public class AtaxxModel implements Cloneable {
     private int blueTokens;
     private int redTokens;
     private int numberOfPlay;
+    private boolean gameVSComputer;
     private Algorithm algorithm;
 
     private AtaxxModel() {
@@ -38,12 +39,15 @@ public class AtaxxModel implements Cloneable {
         return instance;
     }
 
-    public void generate(int size, int startingPieces) {
+    public void generate(int size, int startingPieces, boolean gameVSComputer) {
         boardSize = size;
+        this.gameVSComputer = gameVSComputer;
         if (board == null) {
             board = new DefaultBoard();
         }
-        clear();
+        tiles.clear();
+        numberOfPlay = 1;
+        currentPlayer = Owner.BLUE;
 
         for (int i = 0; i < size; i++) {
             tiles.add(new ArrayList<TileModel>());
@@ -58,18 +62,11 @@ public class AtaxxModel implements Cloneable {
         setOwnership(size, startingPieces);
     }
 
-    private void clear() {
-        tiles.clear();
-        numberOfPlay = 1;
-        currentPlayer = Owner.BLUE;
-    }
-
     private void setOwnership(int size, int startingPieces) {
         switch (startingPieces) {
             case TWO_TOKENS:
                 get(0, 0).addPiece(Owner.BLUE);
                 get(size - 1, size - 1).addPiece(Owner.BLUE);
-
                 get(size - 1, 0).addPiece(Owner.RED);
                 get(0, size - 1).addPiece(Owner.RED);
                 redTokens = blueTokens = TWO_TOKENS;
@@ -78,21 +75,6 @@ public class AtaxxModel implements Cloneable {
                 get(0, 0).addPiece(Owner.BLUE);
                 get(size - 1, size - 1).addPiece(Owner.RED);
         }
-    }
-
-    //TODO
-    public boolean isGameOver() {
-        return blueTokens == 0 || redTokens == 0;
-    }
-
-    //TODO
-    public Owner getWinner() {
-        if (blueTokens == 0) {
-            return Owner.RED;
-        } else if (redTokens == 0) {
-            return Owner.BLUE;
-        }
-        return null;
     }
 
     public TileModel get(int x, int y) {
@@ -183,6 +165,7 @@ public class AtaxxModel implements Cloneable {
                 }
             }
         }
+        numberOfPlay++;
     }
 
     private void spread(TileModel c) {
@@ -206,7 +189,22 @@ public class AtaxxModel implements Cloneable {
     public void changePlayer() {
         this.print();
         currentPlayer = currentPlayer.opposite();
-        if(currentPlayer == Owner.RED){
+    }
+
+    public boolean canPlay() {
+        for (List<TileModel> l : tiles) {
+            for (TileModel t : l) {
+                 if (currentPlayer == t.getOwner()
+                         && !getPossibleMoves(t).isEmpty()) {
+                          return true;
+                 }
+            }
+        }
+        return false;
+    }
+
+    public void play() {
+        if(Owner.RED == currentPlayer){
             algorithm.buildTree(this);
             Node n = algorithm.run(algorithm.getRoot());
             TileModel start = n.getTile();
@@ -280,6 +278,23 @@ public class AtaxxModel implements Cloneable {
 
     public void setAlgorithm(Algorithm a) {
         this.algorithm = a;
+    }
+
+    public boolean isGameVSComputer() {
+        return gameVSComputer;
+    }
+
+    //TODO
+    public boolean isGameOver() {
+        return blueTokens == 0 || redTokens == 0
+                || blueTokens + redTokens == boardSize * boardSize;
+    }
+
+    //TODO
+    public Owner getWinner() {
+        return blueTokens > redTokens ? Owner.BLUE
+                : (redTokens > blueTokens ? Owner.RED
+                : null) ;
     }
 
     public int getNumberOfPlay() {

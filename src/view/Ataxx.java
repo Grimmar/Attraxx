@@ -23,6 +23,9 @@ import model.AtaxxModel;
 import model.PieceModel;
 import model.ai.Algorithm;
 import model.ai.MiniMax;
+import view.stages.AbstractStage;
+import view.stages.BoardConfigurationStage;
+import view.stages.GameConfigurationStage;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -41,6 +44,7 @@ public class Ataxx extends Application {
     private Label clock;
     private int boardSize;
     private int startingPieces;
+    private boolean gameVSComputer;
 
     public static void main(String[] args) {
         launch(args);
@@ -60,6 +64,7 @@ public class Ataxx extends Application {
         createAndInstallMenuBar();
         createView();
         placeComponents();
+
         primaryStage.setScene(scene);
         primaryStage.sizeToScene();
         primaryStage.show();
@@ -74,19 +79,20 @@ public class Ataxx extends Application {
         VBox.setVgrow(sp, Priority.ALWAYS);
         BorderPane.setMargin(pane, new Insets(0, 10, 0, 10));
         VBox.setMargin(sp, new Insets(10, 0, 10, 0));
-        sp.setStyle("-fx-box-border: transparent;");
-        borderPane.setStyle("-fx-box-border: transparent;");
-        pane.setStyle("-fx-box-border: transparent;");
+        sp.setStyle("-fx-box-border: transparent; -fx-border-width: 0; -fx-background-color: white;");
+        borderPane.setStyle("-fx-box-border: transparent; -fx-background-color: white;");
+        pane.setStyle("-fx-box-border: transparent; -fx-background-color: white;");
         ((VBox) (scene.getRoot())).getChildren().addAll(sp);
     }
 
     private void createModel() {
         startingPieces = AtaxxModel.TWO_TOKENS;
         boardSize = BOARD_DEFAULT_SIZE;
+        gameVSComputer = false;
         model = AtaxxModel.getInstance();
         Algorithm o = new MiniMax(3);
         model.setAlgorithm(o);
-        model.generate(boardSize, startingPieces);
+        model.generate(boardSize, startingPieces, gameVSComputer);
     }
 
     private void createView() {
@@ -185,7 +191,7 @@ public class Ataxx extends Application {
                 pieceViews.clear();
                 tileViews.clear();
                 pane.getChildren().clear();
-                model.generate(boardSize, startingPieces);
+                model.generate(boardSize, startingPieces, gameVSComputer);
                 initBoard(pane, boardSize);
             }
         });
@@ -195,9 +201,29 @@ public class Ataxx extends Application {
                 System.exit(0);
             }
         });
+        ItemEnum.GAME.setEvent(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                AbstractStage stage = GameConfigurationStage.getInstance(Ataxx.this);
+                stage.show();
+            }
+        });
+        ItemEnum.BOARD.setEvent(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                AbstractStage stage = BoardConfigurationStage.getInstance(Ataxx.this);
+                stage.show();
+            }
+        });
+        ItemEnum.HELP.setEvent(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                System.exit(0);
+            }
+        });
     }
 
-    public PieceView makeAtaxxPiece(PieceModel p, TileView t) {
+    private PieceView makeAtaxxPiece(PieceModel p, TileView t) {
         PieceView pieceView = new PieceView(p, t);
         pieceView.setOnMousePressed(new AtaxxMousePressedHandler(model, this));
         pieceView.setOnMouseDragged(new AtaxxMouseDraggedHandler(model, this));

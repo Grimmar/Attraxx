@@ -27,16 +27,19 @@ public class AtaxxMouseReleasedHandler extends AtaxxAbstractHandler {
                 dragged.cancelMove();
             } else {
                 try {
-                    /*System.out.println("Move bleu : "+originModel.getPositionX() + " , "+originModel.getPositionY()
-                    +" => "+arrival.getModel().getPositionX()+" , "+arrival.getModel().getPositionY());*/
                     model.move(originModel, arrival.getModel());
                     view.refresh();
                     model.changePlayer();
+                    if (model.isGameVSComputer()) {
+                          model.play();
+                    }
                     view.refresh();
                     if (model.isGameOver()) {
+                        System.out.println("fin");
                         //TODO Afficher message de fin et vainqueur
-                    } else {
-                        //TODO if !canPlay switch owner
+                    } else if (!model.canPlay()){
+                         model.changePlayer();
+                        //TODO display winner
                     }
                 } catch (IllegalAccessException ex) {
                 }
