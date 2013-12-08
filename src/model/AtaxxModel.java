@@ -1,12 +1,12 @@
 package model;
 
+import model.ai.Algorithm;
+import model.ai.tree.Node;
 import model.board.Board;
 import model.board.DefaultBoard;
 
 import java.util.ArrayList;
 import java.util.List;
-import model.ai.Algorithm;
-import model.ai.tree.Node;
 
 /**
  *
@@ -97,7 +97,6 @@ public class AtaxxModel implements Cloneable {
 
     public TileModel get(int x, int y) {
         if (x < 0 || x >= tiles.size() || y < 0 || y >= tiles.size()) {
-            //throw new IndexOutOfBoundsException();
             return null;
         }
         return tiles.get(x).get(y);
@@ -208,7 +207,6 @@ public class AtaxxModel implements Cloneable {
         this.print();
         currentPlayer = currentPlayer.opposite();
         if(currentPlayer == Owner.RED){
-            
             algorithm.buildTree(this);
             Node n = algorithm.run(algorithm.getRoot());
             TileModel start = n.getTile();
@@ -225,18 +223,6 @@ public class AtaxxModel implements Cloneable {
 
     public boolean isCurrentPlayerTurn(Owner owner) {
         return this.currentPlayer == owner;
-    }
-
-    public int getNumberOfPlay() {
-        return numberOfPlay;
-    }
-
-    public int getBlueTokens() {
-        return blueTokens;
-    }
-
-    public int getRedTokens() {
-        return redTokens;
     }
     
     public int getTokens(Owner o){
@@ -295,6 +281,16 @@ public class AtaxxModel implements Cloneable {
     public void setAlgorithm(Algorithm a) {
         this.algorithm = a;
     }
-    
-    
+
+    public int getNumberOfPlay() {
+        return numberOfPlay;
+    }
+
+    public int getBlueTokens() {
+        return blueTokens;
+    }
+
+    public int getRedTokens() {
+        return redTokens;
+    }
 }

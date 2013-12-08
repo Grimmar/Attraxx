@@ -3,9 +3,7 @@ package controller;
 import javafx.scene.input.MouseEvent;
 import model.AtaxxModel;
 import model.TileModel;
-import model.PieceModel;
 import view.Ataxx;
-import view.PieceView;
 import view.TileView;
 
 public class AtaxxMouseReleasedHandler extends AtaxxAbstractHandler {
@@ -29,21 +27,12 @@ public class AtaxxMouseReleasedHandler extends AtaxxAbstractHandler {
                 dragged.cancelMove();
             } else {
                 try {
-                    System.out.println("Move bleu : "+originModel.getPositionX() + " , "+originModel.getPositionY()
-                    +" => "+arrival.getModel().getPositionX()+" , "+arrival.getModel().getPositionY());
+                    /*System.out.println("Move bleu : "+originModel.getPositionX() + " , "+originModel.getPositionY()
+                    +" => "+arrival.getModel().getPositionX()+" , "+arrival.getModel().getPositionY());*/
                     model.move(originModel, arrival.getModel());
-                    
-                    view.clearPieces();
-
-                    for (TileView r : view.getTileViews()) {
-                        PieceModel pieceModel = r.getModel().getPieceModel();
-                        if (pieceModel != null) {
-                            PieceView pieceViewRegion = view.makeAtaxxPiece(pieceModel, r);
-                            view.addPiece(pieceViewRegion);
-                            view.getPane().getChildren().add(pieceViewRegion);
-                        }
-                    }
+                    view.refresh();
                     model.changePlayer();
+                    view.refresh();
                     if (model.isGameOver()) {
                         //TODO Afficher message de fin et vainqueur
                     } else {

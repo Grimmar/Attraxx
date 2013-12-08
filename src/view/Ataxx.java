@@ -217,18 +217,18 @@ public class Ataxx extends Application {
         return scene.getHeight();
     }
 
-    public void clearPieces() {
+    public void refresh() {
         for (PieceView p : pieceViews) {
             pane.getChildren().remove(p);
         }
         pieceViews.clear();
-    }
-
-    public void addPiece(PieceView pieceView) {
-        pieceViews.add(pieceView);
-    }
-
-    public AnchorPane getPane() {
-        return pane;
+        for (TileView r : tileViews) {
+            PieceModel pieceModel = r.getModel().getPieceModel();
+            if (pieceModel != null) {
+                PieceView pieceView = makeAtaxxPiece(pieceModel, r);
+                pieceViews.add(pieceView);
+                pane.getChildren().add(pieceView);
+            }
+        }
     }
 }
