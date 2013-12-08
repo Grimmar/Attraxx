@@ -42,4 +42,9 @@ public class CrossBoard extends AbstractBoard {
                 lock(4, 3);
         }
     }
+
+    @Override
+    public BoardType getType() {
+        return BoardType.CROSS;
+    }
 }

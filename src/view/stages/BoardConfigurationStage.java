@@ -5,22 +5,25 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import model.board.BoardType;
 import view.Ataxx;
+import view.component.NameableCallback;
 
 public class BoardConfigurationStage extends AbstractStage {
 
     private Button btn;
     protected static AbstractStage instance;
     private ComboBox<Integer> sizeComboBox;
-    private ComboBox<Integer> boardComboBox;
+    private ComboBox<BoardType> boardComboBox;
+    private ToggleGroup group;
+    private RadioButton singleToken;
+    private RadioButton twoTokens;
 
     protected BoardConfigurationStage(Ataxx parent) {
         super(parent);
@@ -43,15 +46,22 @@ public class BoardConfigurationStage extends AbstractStage {
                 );
         sizeComboBox = new ComboBox<>(sizeOptions);
 
-        //TODO SET enums
-        ObservableList<Integer> boardOptions =
-                FXCollections.observableArrayList(
-                        7,
-                        8,
-                        9,
-                        10
-                );
-        boardComboBox = new ComboBox<>(boardOptions);
+        ObservableList<BoardType> boardOptions =
+                FXCollections.observableArrayList(BoardType.values());
+
+        NameableCallback<BoardType> boardCellFactory = new NameableCallback<>();
+        boardComboBox = new ComboBox<>();
+        boardComboBox.setItems(boardOptions);
+        boardComboBox.setButtonCell(boardCellFactory.call(null));
+        boardComboBox.setCellFactory(boardCellFactory);
+
+        group = new ToggleGroup();
+
+        singleToken = new RadioButton("Une pièce");
+        singleToken.setToggleGroup(group);
+
+        twoTokens = new RadioButton("Deux pièces");
+        twoTokens.setToggleGroup(group);
     }
 
     @Override
@@ -66,17 +76,20 @@ public class BoardConfigurationStage extends AbstractStage {
         HBox hbBtn = new HBox(10);
         hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
         hbBtn.getChildren().add(btn);
-        grid.add(hbBtn, 1, 4);
+        grid.add(hbBtn, 1, 6);
 
         Label boardSize = new Label("Taille du plateau :");
         grid.add(boardSize, 0, 1);
-
         grid.add(sizeComboBox, 1, 1);
 
         Label boardConfig = new Label("Type de plateau :");
         grid.add(boardConfig, 0, 2);
-
         grid.add(boardComboBox, 1, 2);
+
+        Label numberOfToken = new Label("Nombre de pièces :");
+        grid.add(numberOfToken, 0, 3);
+        grid.add(singleToken, 1, 3);
+        grid.add(twoTokens, 1, 4);
     }
 
     @Override
@@ -85,8 +98,9 @@ public class BoardConfigurationStage extends AbstractStage {
 
             @Override
             public void handle(ActionEvent e) {
-                parent.setBoardSize(sizeComboBox.getValue());
-                //TODO board
+                parent.getConfiguration().setBoardSize(sizeComboBox.getValue());
+                parent.getConfiguration().setBoardType(boardComboBox.getValue());
+                parent.getConfiguration().setSingleToken(singleToken.isSelected());
                 parent.reset();
                 close();
             }
@@ -95,8 +109,14 @@ public class BoardConfigurationStage extends AbstractStage {
 
     @Override
     public void render() {
-        sizeComboBox.setValue(parent.getBoardSize());
-        boardComboBox.setValue(parent.getBoardSize());
+        sizeComboBox.setValue(parent.getConfiguration().getBoardSize());
+        //TODO
+        boardComboBox.setValue(parent.getConfiguration().getBoardType());
+        if(parent.getConfiguration().isSingleToken()) {
+            singleToken.setSelected(true);
+        } else {
+            twoTokens.setSelected(true);
+        }
         show();
     }
 

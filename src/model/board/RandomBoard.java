@@ -4,11 +4,17 @@ import java.util.Random;
 
 public class RandomBoard extends AbstractBoard{
 
+    private static final int MAX_LOCKS = 15;
+
     private int randomLocks;
-    private static final int DEFAULT_RANDOM_LOCKS = 5;
+    private static Random random;
+
+    static {
+        random = new Random();
+    }
 
     public RandomBoard(int size) {
-        this(size, DEFAULT_RANDOM_LOCKS);
+        this(size, random.nextInt(MAX_LOCKS));
     }
 
     public RandomBoard(int size, int random) {
@@ -24,7 +30,6 @@ public class RandomBoard extends AbstractBoard{
 
     @Override
     protected void placeLocks() {
-        Random random = new Random();
         for (int i = 0; i < randomLocks; i++) {
             int x = random.nextInt(size);
             int y = random.nextInt(size);
@@ -35,5 +40,10 @@ public class RandomBoard extends AbstractBoard{
                 i--;
             }
         }
+    }
+
+    @Override
+    public BoardType getType() {
+        return BoardType.RANDOM;
     }
 }

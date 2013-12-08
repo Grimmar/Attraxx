@@ -8,7 +8,7 @@ public class DefaultBoard implements Board {
     }
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public BoardType getType() {
+        return BoardType.DEFAULT;
     }
 }

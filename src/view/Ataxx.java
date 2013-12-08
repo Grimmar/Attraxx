@@ -20,10 +20,9 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
+import model.AtaxxConfiguration;
 import model.AtaxxModel;
 import model.PieceModel;
-import model.ai.algorithms.Algorithm;
-import model.ai.algorithms.MiniMax;
 import view.stages.AbstractStage;
 import view.stages.BoardConfigurationStage;
 import view.stages.GameConfigurationStage;
@@ -35,17 +34,13 @@ import java.util.List;
 
 public class Ataxx extends Application {
 
-    private static final int BOARD_DEFAULT_SIZE = 7;
-
     private AtaxxModel model;
+    private AtaxxConfiguration configuration;
     private List<PieceView> pieceViews;
     private List<TileView> tileViews;
     private Scene scene;
     private AnchorPane pane;
     private Label clock;
-    private int boardSize;
-    private int startingPieces;
-    private boolean gameVSComputer;
 
     public static void main(String[] args) {
         launch(args);
@@ -101,13 +96,9 @@ public class Ataxx extends Application {
     }
 
     private void createModel() {
-        startingPieces = AtaxxModel.TWO_TOKENS;
-        boardSize = BOARD_DEFAULT_SIZE;
-        gameVSComputer = true;
-        model = AtaxxModel.getInstance();
-        Algorithm o = new MiniMax(3);
-        model.setAlgorithm(o);
-        model.generate(boardSize, startingPieces, gameVSComputer);
+        configuration = new AtaxxConfiguration();
+        model = AtaxxModel.getInstance();;
+        model.generate(configuration);
     }
 
     private void createView() {
@@ -128,7 +119,7 @@ public class Ataxx extends Application {
         pane.setMaxWidth(600);
         pane.setMaxHeight(600);
         pane.setPrefSize(600, 600);
-        initBoard(pane, boardSize);
+        initBoard(pane, configuration.getBoardSize());
     }
 
     private void initBoard(Pane pane, int size) {
@@ -203,8 +194,8 @@ public class Ataxx extends Application {
         pieceViews.clear();
         tileViews.clear();
         pane.getChildren().clear();
-        model.generate(boardSize, startingPieces, gameVSComputer);
-        initBoard(pane, boardSize);
+        model.generate(configuration);
+        initBoard(pane, configuration.getBoardSize());
     }
 
     private void createEventHandlers() {
@@ -237,7 +228,7 @@ public class Ataxx extends Application {
         ItemEnum.HELP.setEvent(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                System.exit(0);
+                //TODO
             }
         });
     }
@@ -262,20 +253,8 @@ public class Ataxx extends Application {
         return scene.getHeight();
     }
 
-    public int getBoardSize() {
-        return boardSize;
-    }
-
-    public void setBoardSize(int boardSize) {
-        this.boardSize = boardSize;
-    }
-
-    public boolean isGameVSComputer() {
-        return gameVSComputer;
-    }
-
-    public void setGameVSComputer(boolean gameVSComputer) {
-        this.gameVSComputer = gameVSComputer;
+    public AtaxxConfiguration getConfiguration() {
+        return configuration;
     }
 
     public void refresh() {

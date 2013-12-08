@@ -1,8 +1,10 @@
 package model.ai;
 
-public enum DifficultyEnum {
-    BEGINNER("Débutant", 1), APPRENTICE("Apprenti", 2), AVERAGE("Normal", 3)
-    , EXPERT("Expert", 4), LEGENDARY("Légendaire", 5);
+import model.Nameable;
+
+public enum DifficultyEnum implements Nameable {
+    BEGINNER("Débutant", 1), APPRENTICE("Apprenti", 2)
+    , EXPERT("Expert", 3), LEGENDARY("Légendaire", 4);
     private final String label;
     private final int depth;
 
@@ -11,7 +13,7 @@ public enum DifficultyEnum {
         this.depth = depth;
     }
 
-    public String getLabel() {
+    public String getName() {
         return label;
     }
 

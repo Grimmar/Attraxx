@@ -1,9 +1,10 @@
 package model;
 
+import model.ai.AlgorithmEnum;
+import model.ai.DifficultyEnum;
 import model.ai.algorithms.Algorithm;
 import model.ai.tree.Node;
-import model.board.Board;
-import model.board.DefaultBoard;
+import model.board.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +14,6 @@ import java.util.List;
  *
  */
 public class AtaxxModel implements Cloneable {
-
-    public static final int SINGLE_TOKEN = 1;
-    public static final int TWO_TOKENS = 2;
 
     private static AtaxxModel instance;
     private List<List<TileModel>> tiles;
@@ -38,20 +36,21 @@ public class AtaxxModel implements Cloneable {
         }
         return instance;
     }
-
-    public void generate(int size, int startingPieces, boolean gameVSComputer) {
-        boardSize = size;
-        this.gameVSComputer = gameVSComputer;
-        if (board == null) {
+    public void generate(AtaxxConfiguration c) {
+        boardSize = c.getBoardSize();
+        this.gameVSComputer = c.isGameVSComputer();
+        if (c.getBoardType() == null) {
             board = new DefaultBoard();
+        } else {
+            board = c.getBoardType().make(boardSize);
         }
         tiles.clear();
         numberOfPlay = 1;
         currentPlayer = Owner.BLUE;
 
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < boardSize; i++) {
             tiles.add(new ArrayList<TileModel>());
-            for (int j = 0; j < size; j++) {
+            for (int j = 0; j < boardSize; j++) {
                 TileModel tile = new TileModel(i, j);
                 if (board.isLocked(i, j)) {
                     tile.lock();
@@ -59,22 +58,21 @@ public class AtaxxModel implements Cloneable {
                 tiles.get(i).add(tile);
             }
         }
-        setOwnership(size, startingPieces);
+        setOwnership(boardSize, c.isSingleToken());
+        setAlgorithm(c.getAlgorithm(), c.getDifficulty());
     }
 
-    private void setOwnership(int size, int startingPieces) {
-        switch (startingPieces) {
-            case TWO_TOKENS:
-                get(0, 0).addPiece(Owner.BLUE);
-                get(size - 1, size - 1).addPiece(Owner.BLUE);
-                get(size - 1, 0).addPiece(Owner.RED);
-                get(0, size - 1).addPiece(Owner.RED);
-                redTokens = blueTokens = TWO_TOKENS;
-                break;
-            default:
-                get(0, 0).addPiece(Owner.BLUE);
-                get(size - 1, size - 1).addPiece(Owner.RED);
+    private void setOwnership(int size, boolean singleToken) {
+        if (singleToken) {
+            get(0, 0).addPiece(Owner.BLUE);
+            get(size - 1, size - 1).addPiece(Owner.RED);
+        } else {
+            get(0, 0).addPiece(Owner.BLUE);
+            get(size - 1, size - 1).addPiece(Owner.BLUE);
+            get(size - 1, 0).addPiece(Owner.RED);
+            get(0, size - 1).addPiece(Owner.RED);
         }
+        updateTokens();
     }
 
     public TileModel get(int x, int y) {
@@ -105,6 +103,10 @@ public class AtaxxModel implements Cloneable {
             updateTokens();
         } else {
             throw new IllegalAccessException("Error in move");
+        }
+        changePlayer();
+        if (!canPlay()){
+            changePlayer();
         }
     }
 
@@ -186,7 +188,7 @@ public class AtaxxModel implements Cloneable {
         }
     }
 
-    public void changePlayer() {
+    private void changePlayer() {
         this.print();
         currentPlayer = currentPlayer.opposite();
     }
@@ -195,8 +197,8 @@ public class AtaxxModel implements Cloneable {
         for (List<TileModel> l : tiles) {
             for (TileModel t : l) {
                  if (currentPlayer == t.getOwner()
-                         && !getPossibleMoves(t).isEmpty()) {
-                          return true;
+                     && !getPossibleMoves(t).isEmpty()) {
+                     return true;
                  }
             }
         }
@@ -204,7 +206,7 @@ public class AtaxxModel implements Cloneable {
     }
 
     public void play() {
-        if(Owner.RED == currentPlayer){
+        if (Owner.RED == currentPlayer){
             algorithm.buildTree(this);
             Node n = algorithm.run(algorithm.getRoot());
             TileModel start = n.getTile();
@@ -214,7 +216,6 @@ public class AtaxxModel implements Cloneable {
             } catch (IllegalAccessException ex) {
                 System.out.println("Oups ! fail");
             }
-            changePlayer();
         }
         numberOfPlay++;
     }
@@ -276,8 +277,9 @@ public class AtaxxModel implements Cloneable {
         }
     }
 
-    public void setAlgorithm(Algorithm a) {
-        this.algorithm = a;
+    public void setAlgorithm(AlgorithmEnum a, DifficultyEnum d) {
+        int depth = d.getDepth();
+        this.algorithm = a.make(depth);
     }
 
     public boolean isGameVSComputer() {

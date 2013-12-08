@@ -17,4 +17,9 @@ public class SquareBoard extends AbstractBoard {
         lock(size - 3, size - 2);
         lock(size - 2, size - 3);
     }
+
+    @Override
+    public BoardType getType() {
+        return BoardType.SQUARE;
+    }
 }

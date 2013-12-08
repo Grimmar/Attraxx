@@ -11,4 +11,6 @@ public interface Board {
 
     public boolean isLocked(int i, int j);
 
+    public BoardType getType();
+
 }

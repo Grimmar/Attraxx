@@ -13,21 +13,21 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.util.Callback;
 import model.ai.AlgorithmEnum;
 import model.ai.DifficultyEnum;
 import view.Ataxx;
+import view.component.NameableCallback;
 
 public class GameConfigurationStage extends AbstractStage {
     protected static AbstractStage instance;
     private Button btn;
+    private ToggleGroup group;
     private RadioButton singlePlayer;
     private RadioButton twoPlayers;
     private ComboBox<DifficultyEnum> difficultyComboBox;
     private ComboBox<AlgorithmEnum> algorithmComboBox;
     private Label difficulty;
     private Label algorithm;
-    private ToggleGroup group;
     private HBox hbBtn;
 
     protected GameConfigurationStage(Ataxx parent) {
@@ -56,24 +56,7 @@ public class GameConfigurationStage extends AbstractStage {
         ObservableList<DifficultyEnum> difficultyEnumOptions =
                 FXCollections.observableArrayList(DifficultyEnum.values());
         difficultyComboBox = new ComboBox<>();
-        Callback<ListView<DifficultyEnum>, ListCell<DifficultyEnum>> difficultyCellFactory =
-                new Callback<ListView<DifficultyEnum>, ListCell<DifficultyEnum>>() {
-            @Override
-            public ListCell<DifficultyEnum> call(ListView<DifficultyEnum> param) {
-                final ListCell<DifficultyEnum> cell = new ListCell<DifficultyEnum>() {
-                    @Override
-                    public void updateItem(DifficultyEnum item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (item != null) {
-                            setText(item.getLabel());
-                        } else {
-                            setText(null);
-                        }
-                    }
-                };
-                return cell;
-            }
-        };
+        NameableCallback<DifficultyEnum> difficultyCellFactory = new NameableCallback<>();
         difficultyComboBox.setItems(difficultyEnumOptions);
         difficultyComboBox.setButtonCell(difficultyCellFactory.call(null));
         difficultyComboBox.setCellFactory(difficultyCellFactory);
@@ -81,24 +64,7 @@ public class GameConfigurationStage extends AbstractStage {
         ObservableList<AlgorithmEnum> algorithmOptions =
                 FXCollections.observableArrayList(AlgorithmEnum.values());
         algorithmComboBox = new ComboBox<>();
-        Callback<ListView<AlgorithmEnum>, ListCell<AlgorithmEnum>> algorithmCellFactory =
-                new Callback<ListView<AlgorithmEnum>, ListCell<AlgorithmEnum>>() {
-                    @Override
-                    public ListCell<AlgorithmEnum> call(ListView<AlgorithmEnum> param) {
-                        final ListCell<AlgorithmEnum> cell = new ListCell<AlgorithmEnum>() {
-                            @Override
-                            public void updateItem(AlgorithmEnum item, boolean empty) {
-                                super.updateItem(item, empty);
-                                if (item != null) {
-                                    setText(item.getLabel());
-                                } else {
-                                    setText(null);
-                                }
-                            }
-                        };
-                        return cell;
-                    }
-                };
+        NameableCallback<AlgorithmEnum> algorithmCellFactory = new NameableCallback<>();
         algorithmComboBox.setItems(algorithmOptions);
         algorithmComboBox.setButtonCell(algorithmCellFactory.call(null));
         algorithmComboBox.setCellFactory(algorithmCellFactory);
@@ -135,9 +101,9 @@ public class GameConfigurationStage extends AbstractStage {
             @Override
             public void handle(ActionEvent e) {
                 boolean vsIa = singlePlayer.isSelected() ? true : false;
-                parent.setGameVSComputer(vsIa);
-                //TODO difficulty
-                //TODO algorithm
+                parent.getConfiguration().setGameVSComputer(vsIa);
+                parent.getConfiguration().setDifficulty(difficultyComboBox.getValue());
+                parent.getConfiguration().setAlgorithm(algorithmComboBox.getValue());
                 parent.reset();
                 close();
             }
@@ -169,10 +135,9 @@ public class GameConfigurationStage extends AbstractStage {
 
     @Override
     public void render() {
-        //TODO
-        //difficultyComboBox.setValue(parent.getBoardSize());
-        //algorithmComboBox.setValue(parent.getBoardSize());
-        if(parent.isGameVSComputer()) {
+        difficultyComboBox.setValue(parent.getConfiguration().getDifficulty());
+        algorithmComboBox.setValue(parent.getConfiguration().getAlgorithm());
+        if(parent.getConfiguration().isGameVSComputer()) {
             singlePlayer.setSelected(true);
         } else {
             twoPlayers.setSelected(true);

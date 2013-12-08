@@ -2,6 +2,7 @@ package controller;
 
 import javafx.scene.input.MouseEvent;
 import model.AtaxxModel;
+import model.Owner;
 import model.TileModel;
 import view.Ataxx;
 import view.TileView;
@@ -29,18 +30,15 @@ public class AtaxxMouseReleasedHandler extends AtaxxAbstractHandler {
                 try {
                     model.move(originModel, arrival.getModel());
                     view.refresh();
-                    model.changePlayer();
-                    if (model.isGameVSComputer()) {
-                          model.play();
-                    }
-                    view.refresh();
+
                     if (model.isGameOver()) {
-                        System.out.println("fin");
+                         System.out.println("fin");
                         //TODO Afficher message de fin et vainqueur
-                    } else if (!model.canPlay()){
-                         model.changePlayer();
-                        //TODO display winner
                     }
+                   while(model.isGameVSComputer() && model.isCurrentPlayerTurn(Owner.RED)) {
+                       model.play();
+                       view.refresh();
+                   }
                 } catch (IllegalAccessException ex) {
                 }
             }
