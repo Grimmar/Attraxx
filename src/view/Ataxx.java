@@ -18,6 +18,7 @@ import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import model.AtaxxModel;
 import model.PieceModel;
@@ -65,6 +66,20 @@ public class Ataxx extends Application {
         createView();
         placeComponents();
 
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent windowEvent) {
+            AbstractStage stage = GameConfigurationStage.getInstance(Ataxx.this);
+            if (stage != null) {
+                stage.close();
+            }
+            stage = BoardConfigurationStage.getInstance(Ataxx.this);
+            if (stage != null) {
+                stage.close();
+            }
+            }
+        });
+
         primaryStage.setScene(scene);
         primaryStage.sizeToScene();
         primaryStage.show();
@@ -88,7 +103,7 @@ public class Ataxx extends Application {
     private void createModel() {
         startingPieces = AtaxxModel.TWO_TOKENS;
         boardSize = BOARD_DEFAULT_SIZE;
-        gameVSComputer = false;
+        gameVSComputer = true;
         model = AtaxxModel.getInstance();
         Algorithm o = new MiniMax(3);
         model.setAlgorithm(o);
@@ -184,15 +199,19 @@ public class Ataxx extends Application {
         ((VBox) scene.getRoot()).getChildren().add(menuBar);
     }
 
+    public void reset() {
+        pieceViews.clear();
+        tileViews.clear();
+        pane.getChildren().clear();
+        model.generate(boardSize, startingPieces, gameVSComputer);
+        initBoard(pane, boardSize);
+    }
+
     private void createEventHandlers() {
         ItemEnum.NEW_GAME.setEvent(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                pieceViews.clear();
-                tileViews.clear();
-                pane.getChildren().clear();
-                model.generate(boardSize, startingPieces, gameVSComputer);
-                initBoard(pane, boardSize);
+                reset();
             }
         });
         ItemEnum.CLOSE.setEvent(new EventHandler<ActionEvent>() {
@@ -205,14 +224,14 @@ public class Ataxx extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 AbstractStage stage = GameConfigurationStage.getInstance(Ataxx.this);
-                stage.show();
+                stage.render();
             }
         });
         ItemEnum.BOARD.setEvent(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 AbstractStage stage = BoardConfigurationStage.getInstance(Ataxx.this);
-                stage.show();
+                stage.render();
             }
         });
         ItemEnum.HELP.setEvent(new EventHandler<ActionEvent>() {
@@ -241,6 +260,22 @@ public class Ataxx extends Application {
 
     public double getSceneHeight() {
         return scene.getHeight();
+    }
+
+    public int getBoardSize() {
+        return boardSize;
+    }
+
+    public void setBoardSize(int boardSize) {
+        this.boardSize = boardSize;
+    }
+
+    public boolean isGameVSComputer() {
+        return gameVSComputer;
+    }
+
+    public void setGameVSComputer(boolean gameVSComputer) {
+        this.gameVSComputer = gameVSComputer;
     }
 
     public void refresh() {
