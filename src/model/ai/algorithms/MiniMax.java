@@ -1,5 +1,6 @@
-package model.ai;
+package model.ai.algorithms;
 
+import model.ai.algorithms.AbstractAlgorithm;
 import model.ai.tree.Node;
 import model.ai.tree.TreeNode;
 

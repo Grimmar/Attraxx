@@ -1,4 +1,4 @@
-package model.ai;
+package model.ai.algorithms;
 
 import model.AtaxxModel;
 import model.Owner;

@@ -1,6 +1,6 @@
 package model;
 
-import model.ai.Algorithm;
+import model.ai.algorithms.Algorithm;
 import model.ai.tree.Node;
 import model.board.Board;
 import model.board.DefaultBoard;
