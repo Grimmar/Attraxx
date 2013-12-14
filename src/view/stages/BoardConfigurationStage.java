@@ -110,7 +110,6 @@ public class BoardConfigurationStage extends AbstractStage {
     @Override
     public void render() {
         sizeComboBox.setValue(parent.getConfiguration().getBoardSize());
-        //TODO
         boardComboBox.setValue(parent.getConfiguration().getBoardType());
         if(parent.getConfiguration().isSingleToken()) {
             singleToken.setSelected(true);

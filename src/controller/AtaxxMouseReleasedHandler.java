@@ -30,16 +30,13 @@ public class AtaxxMouseReleasedHandler extends AtaxxAbstractHandler {
                 try {
                     model.move(originModel, arrival.getModel());
                     view.refresh();
-
+                    while(model.isGameVSComputer() && model.isCurrentPlayerTurn(Owner.RED)
+                            && !model.isGameOver()) {
+                        model.play();
+                        view.refresh();
+                    }
                     if (model.isGameOver()) {
-                         System.out.println("fin");
-                        //TODO Afficher message de fin et vainqueur
-                    } else {
-                        while(model.isGameVSComputer() && model.isCurrentPlayerTurn(Owner.RED)
-                                && !model.isGameOver()) {
-                            model.play();
-                            view.refresh();
-                        }
+                         view.displayWinner();
                     }
                 } catch (IllegalAccessException ex) {
                 }

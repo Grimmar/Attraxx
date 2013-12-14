@@ -20,16 +20,14 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
-import model.AtaxxConfiguration;
-import model.AtaxxModel;
-import model.PieceModel;
-import model.TileModel;
+import model.*;
 import view.component.ItemEnum;
 import view.component.MenuEnum;
 import view.component.PieceView;
 import view.component.TileView;
 import view.stages.AbstractStage;
 import view.stages.BoardConfigurationStage;
+import view.stages.DialogStage;
 import view.stages.GameConfigurationStage;
 
 import java.text.DateFormat;
@@ -77,6 +75,10 @@ public class Ataxx extends Application {
             if (stage != null) {
                 stage.close();
             }
+            stage = DialogStage.getInstance(Ataxx.this);
+            if (stage != null) {
+                stage.close();
+            }
             }
         });
 
@@ -84,6 +86,7 @@ public class Ataxx extends Application {
         primaryStage.sizeToScene();
         primaryStage.show();
     }
+
     private void placeComponents() {
         BorderPane borderPane = new BorderPane();
         borderPane.setRight(clock);
@@ -98,11 +101,13 @@ public class Ataxx extends Application {
         pane.setStyle("-fx-box-border: transparent; -fx-background-color: white;");
         ((VBox) (scene.getRoot())).getChildren().addAll(sp);
     }
+
     private void createModel() {
         configuration = new AtaxxConfiguration();
         model = AtaxxModel.getInstance();;
         model.generate(configuration);
     }
+
     private void createView() {
         pieceViews = new ArrayList<>();
         tileViews = new ArrayList<>();
@@ -232,6 +237,8 @@ public class Ataxx extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 //TODO
+                /*AbstractStage stage = HelpStage.getInstance(Ataxx.this);
+                stage.render();*/
             }
         });
     }
@@ -256,6 +263,10 @@ public class Ataxx extends Application {
         return scene.getHeight();
     }
 
+    public Owner getWinner() {
+        return model.getWinner();
+    }
+
     public AtaxxConfiguration getConfiguration() {
         return configuration;
     }
@@ -274,5 +285,10 @@ public class Ataxx extends Application {
             }
         }
         pane.requestLayout();
+    }
+
+    public void displayWinner() {
+        AbstractStage stage = DialogStage.getInstance(Ataxx.this);
+        stage.render();
     }
 }

@@ -11,14 +11,15 @@ import javafx.scene.paint.RadialGradient;
  */
 public enum Owner {
 
-    BLUE(RadialGradient.valueOf("radial-gradient("
+    BLUE("Bleu", RadialGradient.valueOf("radial-gradient("
             +"center 50% 18%, radius 50%, reflect, blue, #0000CD 80%)")),
-    RED(RadialGradient.valueOf("radial-gradient("
+    RED("Rouge", RadialGradient.valueOf("radial-gradient("
             +"center 50% 18%, radius 50%, reflect, red, #CD2626 80%)"));
-
+    private final String name;
     private ObjectProperty<Paint> color;
 
-    Owner(Paint paint) {
+    Owner(String name, Paint paint) {
+        this.name = name;
         colorProperty().set(paint);
     }
 
@@ -29,5 +30,9 @@ public enum Owner {
     public ObjectProperty<Paint> colorProperty() {
         if(this.color == null) { this.color = new SimpleObjectProperty<>(); }
         return this.color;
+    }
+
+    public String getName() {
+        return name;
     }
 }
