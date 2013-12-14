@@ -13,7 +13,6 @@ public abstract class AbstractAlgorithm implements Algorithm {
 
     protected Node root;
     private int depth;
-    private int cpt = 0;
 
     public AbstractAlgorithm(int depth) {
         this.depth = depth;
@@ -23,10 +22,10 @@ public abstract class AbstractAlgorithm implements Algorithm {
     @Override
     public void buildTree(AtaxxModel model) {
         long start = System.nanoTime();
+        root = new TreeNode();
         computeTree(model, Owner.RED, root, 0);
         long duree = System.nanoTime() - start;
-        System.out.println("temps de création de l'arbre : " + duree + " en ns");
-        System.out.println("cpt : "+ cpt);
+        System.out.println("Création de l'arbre : " + duree + " en ns");
     }
 
     private void computeTree(AtaxxModel model, Owner owner, Node node, int depth) {
@@ -37,46 +36,40 @@ public abstract class AbstractAlgorithm implements Algorithm {
         List<TileModel> tiles = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                TileModel t = model.get(i, j);
-                if (owner == t.getOwner()) {
+                TileModel t = model.get(j, i);
+                if (owner.equals(t.getOwner())) {
                     tiles.add(t);
                 }
             }
         }
-
-        for (TileModel tile : tiles) {
-            List<TileModel> possibleMoves = model.getPossibleMoves(tile);
-
-            for (TileModel t : possibleMoves) {
-                Node n = new TreeNode(tile, t);
-                cpt++;
+        for (TileModel start : tiles) {
+            List<TileModel> possibleMoves = model.getPossibleMoves(start);
+            for (TileModel end : possibleMoves) {
+                Node n = new TreeNode(start, end);
                 try {
                     AtaxxModel clone = (AtaxxModel) model.clone();
-                    clone.move(clone.get(tile.getPositionX(), tile.getPositionY()),
-                            clone.get(t.getPositionX(), t.getPositionY()));
-                    if (depth + 1 == this.depth) {
-                        n.setValue(clone.getTokens(Owner.RED) - clone.getTokens(Owner.BLUE));
+                    clone.move(clone.get(start.getPositionX(), start.getPositionY()),
+                            clone.get(end.getPositionX(), end.getPositionY()));
+                    if (this.depth == depth + 1) {
+                        n.setValue(clone.getRedTokens() - clone.getBlueTokens());
                     } else {
                         computeTree(clone, owner.opposite(), n, depth + 1);
                     }
                 } catch (IllegalAccessException e) {
-                    System.out.println(e.getMessage());
+                    //System.out.println(e.getMessage());
                 }
-                n.setParent(node);
-                n.toString();
                 node.addSuccessor(n);
             }
-
         }
     }
 
     @Override
-    public Node getRoot() {
-        return root;
-    }
-
-    @Override
-    public Node Max(Node n1, Node n2) {
+    public Node max(Node n1, Node n2) {
+        if (n1 == null) {
+          return n2;
+        } else if (n2 == null) {
+            return n1;
+        }
         if (n1.getValue() > n2.getValue()) {
             return n1;
         }
@@ -84,7 +77,12 @@ public abstract class AbstractAlgorithm implements Algorithm {
     }
 
     @Override
-    public Node Min(Node n1, Node n2) {
+    public Node min(Node n1, Node n2) {
+        if (n1 == null) {
+            return n2;
+        } else if (n2 == null) {
+            return n1;
+        }
         if (n1.getValue() < n2.getValue()) {
             return n1;
         }

@@ -4,8 +4,8 @@ import javafx.scene.input.MouseEvent;
 import model.AtaxxModel;
 import model.TileModel;
 import view.Ataxx;
-import view.PieceView;
-import view.TileView;
+import view.component.PieceView;
+import view.component.TileView;
 
 public class AtaxxMousePressedHandler extends AtaxxAbstractHandler {
 
@@ -25,8 +25,6 @@ public class AtaxxMousePressedHandler extends AtaxxAbstractHandler {
                     if (model.isMoveValid(origin.getModel(), tileView.getModel())) {
                         if (TileModel.isCellAvailable(tileView.getModel())) {
                             tileView.setValidColor();
-                        } else {
-                            tileView.setInvalidColor();
                         }
                     }
                 }

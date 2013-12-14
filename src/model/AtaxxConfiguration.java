@@ -18,7 +18,7 @@ public class AtaxxConfiguration {
         singleToken = false;
         boardSize = BOARD_DEFAULT_SIZE;
         gameVSComputer = true;
-        boardType = null;
+        boardType = BoardType.DEFAULT;
         algorithm = AlgorithmEnum.MINIMAX;
         difficulty = DifficultyEnum.APPRENTICE;
     }

@@ -1,6 +1,5 @@
 package model.ai.algorithms;
 
-import model.ai.algorithms.AbstractAlgorithm;
 import model.ai.tree.Node;
 import model.ai.tree.TreeNode;
 
@@ -15,23 +14,20 @@ public class MiniMax extends AbstractAlgorithm {
     }
 
     @Override
-    public Node run(Node s) {
+    public Node run() {
         Node n = null;
-        if (s.getTile() == null) {
-            for (Node succ : s.getSuccessors()) {
-                if (n == null) {
-                    n = miniMax(succ);
-                } else {
-                    n = Max(n, miniMax(succ));
-                }
-            }
-        } else {
-            n = miniMax(s);
-        }
 
-        while (n.getParent() != s) {
+        for (Node succ : root.getSuccessors()) {
+            if (n == null) {
+                n = miniMax(succ);
+            } else {
+                n = max(n, miniMax(succ));
+            }
+        }
+        while (root != n && root != n.getParent()) {
             n = n.getParent();
         }
+
         System.out.println("Move " + n.getTile().getPositionX() + " , " + n.getTile().getPositionY() + " =>"
                 + n.getTileEnd().getPositionX() + " , " + n.getTileEnd().getPositionY());
         return n;
@@ -44,14 +40,14 @@ public class MiniMax extends AbstractAlgorithm {
         } else {
             t = new TreeNode();
             if (n.isMax()) {
-                t.setValue(-1);
+                t.setValue(Integer.MIN_VALUE);
                 for (Node succ : n.getSuccessors()) {
-                    t = Max(t, miniMax(succ));
+                    t = max(t, miniMax(succ));
                 }
             } else {
                 t.setValue(Integer.MAX_VALUE);
                 for (Node succ : n.getSuccessors()) {
-                    t = Min(t, miniMax(succ));
+                    t = min(t, miniMax(succ));
                 }
             }
         }

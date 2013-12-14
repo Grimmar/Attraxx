@@ -16,8 +16,15 @@ public class PieceModel implements Cloneable {
     public final Owner getOwner() { return this.ownerProperty().get(); }
     public final void setOwner(Owner o) { this.ownerProperty().set(o); }
 
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return new PieceModel(owner.get());
+    public Object clone() {
+        PieceModel o;
+        Owner owner;
+        if (Owner.RED == getOwner()) {
+            owner = Owner.RED;
+        } else {
+            owner = Owner.BLUE;
+        }
+        o = new PieceModel(owner);
+        return o;
     }
 }

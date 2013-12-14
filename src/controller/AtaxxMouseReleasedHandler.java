@@ -5,7 +5,7 @@ import model.AtaxxModel;
 import model.Owner;
 import model.TileModel;
 import view.Ataxx;
-import view.TileView;
+import view.component.TileView;
 
 public class AtaxxMouseReleasedHandler extends AtaxxAbstractHandler {
 
@@ -34,11 +34,13 @@ public class AtaxxMouseReleasedHandler extends AtaxxAbstractHandler {
                     if (model.isGameOver()) {
                          System.out.println("fin");
                         //TODO Afficher message de fin et vainqueur
+                    } else {
+                        while(model.isGameVSComputer() && model.isCurrentPlayerTurn(Owner.RED)
+                                && !model.isGameOver()) {
+                            model.play();
+                            view.refresh();
+                        }
                     }
-                   while(model.isGameVSComputer() && model.isCurrentPlayerTurn(Owner.RED)) {
-                       model.play();
-                       view.refresh();
-                   }
                 } catch (IllegalAccessException ex) {
                 }
             }

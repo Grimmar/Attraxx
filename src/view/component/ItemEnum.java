@@ -1,4 +1,4 @@
-package view;
+package view.component;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

@@ -4,8 +4,8 @@ import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import model.AtaxxModel;
 import view.Ataxx;
-import view.PieceView;
-import view.TileView;
+import view.component.PieceView;
+import view.component.TileView;
 
 public abstract class AtaxxAbstractHandler implements EventHandler<MouseEvent> {
 

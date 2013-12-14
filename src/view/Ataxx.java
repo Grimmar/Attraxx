@@ -23,6 +23,11 @@ import javafx.util.Duration;
 import model.AtaxxConfiguration;
 import model.AtaxxModel;
 import model.PieceModel;
+import model.TileModel;
+import view.component.ItemEnum;
+import view.component.MenuEnum;
+import view.component.PieceView;
+import view.component.TileView;
 import view.stages.AbstractStage;
 import view.stages.BoardConfigurationStage;
 import view.stages.GameConfigurationStage;
@@ -79,7 +84,6 @@ public class Ataxx extends Application {
         primaryStage.sizeToScene();
         primaryStage.show();
     }
-
     private void placeComponents() {
         BorderPane borderPane = new BorderPane();
         borderPane.setRight(clock);
@@ -94,13 +98,11 @@ public class Ataxx extends Application {
         pane.setStyle("-fx-box-border: transparent; -fx-background-color: white;");
         ((VBox) (scene.getRoot())).getChildren().addAll(sp);
     }
-
     private void createModel() {
         configuration = new AtaxxConfiguration();
         model = AtaxxModel.getInstance();;
         model.generate(configuration);
     }
-
     private void createView() {
         pieceViews = new ArrayList<>();
         tileViews = new ArrayList<>();
@@ -128,7 +130,7 @@ public class Ataxx extends Application {
                 pane.heightProperty().subtract(20));
 
         for (int i = 0; i < size; i++) {
-            Text text = new Text(""+i);
+            Text text = new Text("" + i);
             text.prefHeight(20);
             text.prefWidth(20);
             text.xProperty().bind(gridSize.multiply(i)
@@ -139,7 +141,7 @@ public class Ataxx extends Application {
 
 
         for (int i = 0; i < size; i++) {
-            Text text = new Text(""+i);
+            Text text = new Text("" + i);
             text.prefHeight(20);
             text.prefWidth(20);
             text.setX(0);
@@ -149,7 +151,8 @@ public class Ataxx extends Application {
         }
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                TileView tileView = new TileView(model.get(i, j));
+                TileModel tile = model.get(j, i);
+                TileView tileView = new TileView(tile);
                 tileView.xProperty().bind(gridSize.multiply(j)
                         .divide(size).add(20));
                 tileView.yProperty().bind(gridSize.multiply(i)
@@ -157,7 +160,7 @@ public class Ataxx extends Application {
                 tileView.widthProperty().bind(tileView.heightProperty());
                 tileView.heightProperty().bind(gridSize.divide(size));
 
-                PieceModel pieceModel = model.get(i,j).getPieceModel();
+                PieceModel pieceModel = tile.getPieceModel();
                 if (pieceModel != null) {
                     pieceViews.add(makeAtaxxPiece(pieceModel, tileView));
                 }
@@ -270,5 +273,6 @@ public class Ataxx extends Application {
                 pane.getChildren().add(pieceView);
             }
         }
+        pane.requestLayout();
     }
 }

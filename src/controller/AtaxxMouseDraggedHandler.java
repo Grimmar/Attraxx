@@ -3,7 +3,7 @@ package controller;
 import javafx.scene.input.MouseEvent;
 import model.AtaxxModel;
 import view.Ataxx;
-import view.TileView;
+import view.component.TileView;
 
 public class AtaxxMouseDraggedHandler extends AtaxxAbstractHandler {
 

@@ -1,15 +1,15 @@
 package model.ai.tree;
 
+import model.Owner;
 import model.TileModel;
 
 import java.util.LinkedList;
 import java.util.List;
-import model.Owner;
 
 public class TreeNode implements Node {
 
-    private TileModel tile;
-    private TileModel tileEnd;
+    private TileModel start;
+    private TileModel end;
     private List<Node> children;
     private int value;
     private Node parent;
@@ -18,9 +18,9 @@ public class TreeNode implements Node {
         this(null, null);
     }
 
-    public TreeNode(TileModel tile, TileModel end) {
-        this.tile = tile;
-        this.tileEnd = end;
+    public TreeNode(TileModel start, TileModel end) {
+        this.start = start;
+        this.end = end;
         children = new LinkedList<>();
         value = -1;
     }
@@ -41,6 +41,7 @@ public class TreeNode implements Node {
             throw new IllegalArgumentException("Invalid node");
         }
         children.add(n);
+        n.setParent(this);
     }
 
     @Override
@@ -65,27 +66,26 @@ public class TreeNode implements Node {
 
     @Override
     public boolean isMax() {
-        return Owner.RED == tile.getOwner();
+        return Owner.RED == start.getOwner();
     }
 
     @Override
     public TileModel getTile() {
-        return tile;
+        return start;
     }
 
     @Override
     public TileModel getTileEnd() {
-        return tileEnd;
+        return end;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-
         sb.append("Value ").append(value).append("\n");
-        if (tile != null) {
-            sb.append("Position (").append(tile.getPositionX()).append(" ; ").append(tile.getPositionY()).append(")");
-            sb.append("Owner ").append(tile.getOwner());
+        if (start != null) {
+            sb.append("Position (").append(start.getPositionX()).append(" ; ").append(start.getPositionY()).append(")");
+            sb.append("Owner ").append(start.getOwner());
         }
         for (Node d : children) {
             sb.append(" ");
@@ -93,18 +93,4 @@ public class TreeNode implements Node {
         }
         return sb.toString();
     }
-
-    /*public void print(String space) {
-     if (tile != null) {
-     System.out.println(space + " Position depart(" + tile.getPositionX() + " , " + tile.getPositionY() + ")");
-     System.out.println(space + " Position arrivé(" + tileEnd.getPositionX() + " , " + tileEnd.getPositionY() + ")");
-     System.out.println(space + " OWNER "+ tile.getOwner());
-     }
-     space += "  ";
-     for (Node n : this.getSuccessors()) {
-            
-     n.print(space);
-     }
-
-     }*/
 }
