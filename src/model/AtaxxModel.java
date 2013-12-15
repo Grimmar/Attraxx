@@ -1,10 +1,12 @@
 package model;
 
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.concurrent.Worker;
 import model.ai.AlgorithmEnum;
 import model.ai.DifficultyEnum;
 import model.ai.algorithms.Algorithm;
-import model.ai.tree.Node;
-import model.board.*;
+import model.board.Board;
+import model.board.DefaultBoard;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +35,7 @@ public class AtaxxModel implements Cloneable {
         return instance;
     }
 
-    public void generate(AtaxxConfiguration c) {
+    public void generate(AtaxxConfiguration c) {;
         boardSize = c.getBoardSize();
         this.gameVSComputer = c.isGameVSComputer();
         if (c.getBoardType() == null) {
@@ -200,18 +202,8 @@ public class AtaxxModel implements Cloneable {
 
     public void play() {
         if (Owner.RED == currentPlayer) {
-            algorithm.buildTree(this);
-            Node result = algorithm.run();
-            TileModel start = result.getTile();
-            TileModel end = result.getTileEnd();
-            try {
-                move(get(start.getPositionX(), start.getPositionY()), get(end.getPositionX(),end.getPositionY()));
-            } catch (IllegalAccessException ex) {
-                System.out.println("Problème lors du déplacement de la pièce en "
-                    + end.getPositionX() + " : " + end.getPositionY());
-            }
+            algorithm.start();
         }
-        numberOfPlay++;
     }
 
     public boolean isCurrentPlayerTurn(Owner owner) {
@@ -291,5 +283,9 @@ public class AtaxxModel implements Cloneable {
 
     public int getRedTokens() {
         return redTokens;
+    }
+
+    public ReadOnlyObjectProperty<Worker.State> algorithmStateProperty() {
+        return algorithm.stateProperty();
     }
 }

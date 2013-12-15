@@ -1,5 +1,9 @@
 package model.ai.algorithms;
 
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
+import javafx.concurrent.Worker;
 import model.AtaxxModel;
 import model.Owner;
 import model.TileModel;
@@ -11,16 +15,52 @@ import java.util.List;
 
 public abstract class AbstractAlgorithm implements Algorithm {
 
+    private Service<Void> service;
+    private AtaxxModel model;
     protected Node root;
     private int depth;
+    private Node resultNode;
+
+    protected abstract Node runThread();
 
     public AbstractAlgorithm(int depth) {
+        this.model = AtaxxModel.getInstance();
         this.depth = depth;
-        this.root = new TreeNode();
+        service = new Service<Void>() {
+            @Override
+            protected Task<Void> createTask() {
+                return new Task<Void>() {
+                    @Override protected Void call() throws Exception {
+                        buildTree();
+                        resultNode = runThread();
+                        TileModel start = resultNode.getTile();
+                        TileModel end = resultNode.getTileEnd();
+                        Thread.sleep(300);
+                        try {
+                            model.move(model.get(start.getPositionX(), start.getPositionY()),
+                                    model.get(end.getPositionX(), end.getPositionY()));
+                        } catch (IllegalAccessException ex) {
+                            System.out.println("Problème lors du déplacement de la pièce en "
+                                    + end.getPositionX() + " : " + end.getPositionY());
+                        }
+                        cancel();
+                        return null;
+                    }
+                };
+            }
+        };
+    }
+
+    public ReadOnlyObjectProperty<Worker.State> stateProperty() {
+        return service.stateProperty();
     }
 
     @Override
-    public void buildTree(AtaxxModel model) {
+    public void start() {
+        service.restart();
+    }
+
+    private void buildTree() {
         long start = System.nanoTime();
         root = new TreeNode();
         computeTree(model, Owner.RED, root, 0);
@@ -63,8 +103,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
         }
     }
 
-    @Override
-    public Node max(Node n1, Node n2) {
+    protected Node max(Node n1, Node n2) {
         if (n1 == null) {
           return n2;
         } else if (n2 == null) {
@@ -76,8 +115,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
         return n2;
     }
 
-    @Override
-    public Node min(Node n1, Node n2) {
+    protected Node min(Node n1, Node n2) {
         if (n1 == null) {
             return n2;
         } else if (n2 == null) {

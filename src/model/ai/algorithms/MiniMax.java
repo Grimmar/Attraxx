@@ -14,7 +14,7 @@ public class MiniMax extends AbstractAlgorithm {
     }
 
     @Override
-    public Node run() {
+    public Node runThread() {
         Node n = null;
 
         for (Node succ : root.getSuccessors()) {

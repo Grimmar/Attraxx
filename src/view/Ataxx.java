@@ -1,5 +1,6 @@
 package view;
 
+import controller.AlgorithmChangeListener;
 import controller.AtaxxMouseDraggedHandler;
 import controller.AtaxxMousePressedHandler;
 import controller.AtaxxMouseReleasedHandler;
@@ -25,10 +26,7 @@ import view.component.ItemEnum;
 import view.component.MenuEnum;
 import view.component.PieceView;
 import view.component.TileView;
-import view.stages.AbstractStage;
-import view.stages.BoardConfigurationStage;
-import view.stages.DialogStage;
-import view.stages.GameConfigurationStage;
+import view.stages.*;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -63,28 +61,37 @@ public class Ataxx extends Application {
         createAndInstallMenuBar();
         createView();
         placeComponents();
-
-        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent windowEvent) {
-            AbstractStage stage = GameConfigurationStage.getInstance(Ataxx.this);
-            if (stage != null) {
-                stage.close();
-            }
-            stage = BoardConfigurationStage.getInstance(Ataxx.this);
-            if (stage != null) {
-                stage.close();
-            }
-            stage = DialogStage.getInstance(Ataxx.this);
-            if (stage != null) {
-                stage.close();
-            }
-            }
-        });
+        createController(primaryStage);
 
         primaryStage.setScene(scene);
         primaryStage.sizeToScene();
         primaryStage.show();
+    }
+
+    private void createController(Stage stage) {
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent windowEvent) {
+                AbstractStage stage = GameConfigurationStage.getInstance(Ataxx.this);
+                if (stage != null) {
+                    stage.close();
+                }
+                stage = BoardConfigurationStage.getInstance(Ataxx.this);
+                if (stage != null) {
+                    stage.close();
+                }
+                stage = DialogStage.getInstance(Ataxx.this);
+                if (stage != null) {
+                    stage.close();
+                }
+                stage = HelpStage.getInstance(Ataxx.this);
+                if (stage != null) {
+                    stage.close();
+                }
+            }
+        });
+
+        model.algorithmStateProperty().addListener(new AlgorithmChangeListener(model, this));
     }
 
     private void placeComponents() {
@@ -167,7 +174,7 @@ public class Ataxx extends Application {
 
                 PieceModel pieceModel = tile.getPieceModel();
                 if (pieceModel != null) {
-                    pieceViews.add(makeAtaxxPiece(pieceModel, tileView));
+                    pieceViews.add(makePiece(pieceModel, tileView));
                 }
                 tileViews.add(tileView);
                 pane.getChildren().add(tileView);
@@ -196,14 +203,6 @@ public class Ataxx extends Application {
             menuBar.getMenus().add(menu);
         }
         ((VBox) scene.getRoot()).getChildren().add(menuBar);
-    }
-
-    public void reset() {
-        pieceViews.clear();
-        tileViews.clear();
-        pane.getChildren().clear();
-        model.generate(configuration);
-        initBoard(pane, configuration.getBoardSize());
     }
 
     private void createEventHandlers() {
@@ -237,18 +236,45 @@ public class Ataxx extends Application {
             @Override
             public void handle(ActionEvent actionEvent) {
                 //TODO
-                /*AbstractStage stage = HelpStage.getInstance(Ataxx.this);
-                stage.render();*/
             }
         });
     }
 
-    private PieceView makeAtaxxPiece(PieceModel p, TileView t) {
+    public void reset() {
+        pieceViews.clear();
+        tileViews.clear();
+        pane.getChildren().clear();
+        model.generate(configuration);
+        initBoard(pane, configuration.getBoardSize());
+        model.algorithmStateProperty().addListener(new AlgorithmChangeListener(model, this));
+    }
+
+    private PieceView makePiece(PieceModel p, TileView t) {
         PieceView pieceView = new PieceView(p, t);
         pieceView.setOnMousePressed(new AtaxxMousePressedHandler(model, this));
         pieceView.setOnMouseDragged(new AtaxxMouseDraggedHandler(model, this));
         pieceView.setOnMouseReleased(new AtaxxMouseReleasedHandler(model, this));
         return pieceView;
+    }
+
+    public void refresh() {
+        for (PieceView p : pieceViews) {
+            pane.getChildren().remove(p);
+        }
+        pieceViews.clear();
+        for (TileView r : tileViews) {
+            PieceModel pieceModel = r.getModel().getPieceModel();
+            if (pieceModel != null) {
+                PieceView pieceView = makePiece(pieceModel, r);
+                pieceViews.add(pieceView);
+                pane.getChildren().add(pieceView);
+            }
+        }
+    }
+
+    public void displayWinner() {
+        AbstractStage stage = DialogStage.getInstance(Ataxx.this);
+        stage.render();
     }
 
     public List<TileView> getTileViews() {
@@ -269,26 +295,5 @@ public class Ataxx extends Application {
 
     public AtaxxConfiguration getConfiguration() {
         return configuration;
-    }
-
-    public void refresh() {
-        for (PieceView p : pieceViews) {
-            pane.getChildren().remove(p);
-        }
-        pieceViews.clear();
-        for (TileView r : tileViews) {
-            PieceModel pieceModel = r.getModel().getPieceModel();
-            if (pieceModel != null) {
-                PieceView pieceView = makeAtaxxPiece(pieceModel, r);
-                pieceViews.add(pieceView);
-                pane.getChildren().add(pieceView);
-            }
-        }
-        pane.requestLayout();
-    }
-
-    public void displayWinner() {
-        AbstractStage stage = DialogStage.getInstance(Ataxx.this);
-        stage.render();
     }
 }

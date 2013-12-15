@@ -55,8 +55,11 @@ public class DialogStage extends AbstractStage {
         //Button
         HBox hbBtn = new HBox(10);
         hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
-        hbBtn.getChildren().add(new Label("Le gagnant est le joueur " + parent.getWinner().getName
-                ()));
+        String name = "";
+        if (parent.getWinner() != null) {
+              name = parent.getWinner().getName();
+        }
+        hbBtn.getChildren().add(new Label("Le gagnant est le joueur " + name));
         hbBtn.getChildren().add(btn);
         grid.add(hbBtn, 1, 2);
     }
