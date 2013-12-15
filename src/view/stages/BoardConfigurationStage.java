@@ -101,7 +101,7 @@ public class BoardConfigurationStage extends AbstractStage {
                 parent.getConfiguration().setBoardSize(sizeComboBox.getValue());
                 parent.getConfiguration().setBoardType(boardComboBox.getValue());
                 parent.getConfiguration().setSingleToken(singleToken.isSelected());
-                parent.reset();
+                parent.resetGame();
                 close();
             }
         });

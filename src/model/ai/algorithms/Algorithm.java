@@ -5,5 +5,5 @@ import javafx.concurrent.Worker;
 
 public interface Algorithm {
     void start();
-    ReadOnlyObjectProperty<Worker.State> stateProperty();
+    ReadOnlyObjectProperty<Worker.State> algorithmStateProperty();
 }

@@ -13,8 +13,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import model.ai.AlgorithmEnum;
-import model.ai.DifficultyEnum;
+import model.ai.AlgorithmType;
+import model.ai.DifficultyType;
 import view.Ataxx;
 import view.component.NameableCallback;
 
@@ -24,8 +24,8 @@ public class GameConfigurationStage extends AbstractStage {
     private ToggleGroup group;
     private RadioButton singlePlayer;
     private RadioButton twoPlayers;
-    private ComboBox<DifficultyEnum> difficultyComboBox;
-    private ComboBox<AlgorithmEnum> algorithmComboBox;
+    private ComboBox<DifficultyType> difficultyComboBox;
+    private ComboBox<AlgorithmType> algorithmComboBox;
     private Label difficulty;
     private Label algorithm;
     private HBox hbBtn;
@@ -53,18 +53,18 @@ public class GameConfigurationStage extends AbstractStage {
         difficulty = new Label("Difficulté :");
         algorithm = new Label("Algorithme :");
         //TODO SET enums
-        ObservableList<DifficultyEnum> difficultyEnumOptions =
-                FXCollections.observableArrayList(DifficultyEnum.values());
+        ObservableList<DifficultyType> difficultyEnumOptions =
+                FXCollections.observableArrayList(DifficultyType.values());
         difficultyComboBox = new ComboBox<>();
-        NameableCallback<DifficultyEnum> difficultyCellFactory = new NameableCallback<>();
+        NameableCallback<DifficultyType> difficultyCellFactory = new NameableCallback<>();
         difficultyComboBox.setItems(difficultyEnumOptions);
         difficultyComboBox.setButtonCell(difficultyCellFactory.call(null));
         difficultyComboBox.setCellFactory(difficultyCellFactory);
 
-        ObservableList<AlgorithmEnum> algorithmOptions =
-                FXCollections.observableArrayList(AlgorithmEnum.values());
+        ObservableList<AlgorithmType> algorithmOptions =
+                FXCollections.observableArrayList(AlgorithmType.values());
         algorithmComboBox = new ComboBox<>();
-        NameableCallback<AlgorithmEnum> algorithmCellFactory = new NameableCallback<>();
+        NameableCallback<AlgorithmType> algorithmCellFactory = new NameableCallback<>();
         algorithmComboBox.setItems(algorithmOptions);
         algorithmComboBox.setButtonCell(algorithmCellFactory.call(null));
         algorithmComboBox.setCellFactory(algorithmCellFactory);
@@ -104,7 +104,7 @@ public class GameConfigurationStage extends AbstractStage {
                 parent.getConfiguration().setGameVSComputer(vsIa);
                 parent.getConfiguration().setDifficulty(difficultyComboBox.getValue());
                 parent.getConfiguration().setAlgorithm(algorithmComboBox.getValue());
-                parent.reset();
+                parent.resetGame();
                 close();
             }
         });

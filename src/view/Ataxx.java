@@ -1,9 +1,6 @@
 package view;
 
-import controller.AlgorithmChangeListener;
-import controller.AtaxxMouseDraggedHandler;
-import controller.AtaxxMousePressedHandler;
-import controller.AtaxxMouseReleasedHandler;
+import controller.*;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -42,6 +39,9 @@ public class Ataxx extends Application {
     private Scene scene;
     private AnchorPane pane;
     private Label clock;
+    private Label blueTokensLabel;
+    private Label redTokensLabel;
+    private Label numberOfPlayLabel;
 
     public static void main(String[] args) {
         launch(args);
@@ -50,9 +50,9 @@ public class Ataxx extends Application {
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Ataxx");
-        primaryStage.setMinWidth(800);
+        primaryStage.setMinWidth(850);
         primaryStage.setMinHeight(700);
-        primaryStage.setWidth(800);
+        primaryStage.setWidth(850);
         primaryStage.setHeight(700);
         scene = new Scene(new VBox());
 
@@ -66,6 +66,122 @@ public class Ataxx extends Application {
         primaryStage.setScene(scene);
         primaryStage.sizeToScene();
         primaryStage.show();
+    }
+
+    private void createModel() {
+        configuration = new AtaxxConfiguration();
+        model = AtaxxModel.getInstance();;
+        model.generate(configuration);
+    }
+
+    private void createView() {
+        pieceViews = new ArrayList<>();
+        tileViews = new ArrayList<>();
+        clock = new Label();
+        final DateFormat format = DateFormat.getInstance();
+        final Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                final Calendar cal = Calendar.getInstance();
+                clock.setText(format.format(cal.getTime()));
+            }
+        }));
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.play();
+        pane = new AnchorPane();
+        pane.setMaxWidth(600);
+        pane.setMaxHeight(600);
+        pane.setPrefSize(600, 600);
+        initBoardGame(pane, configuration.getBoardSize());
+
+        blueTokensLabel = new Label(model.blueTokensProperty().get() + "");
+        redTokensLabel = new Label(model.redTokensProperty().get() + "");
+        numberOfPlayLabel = new Label(model.numberOfPlayProperty().get() + "");
+    }
+
+    private void placeComponents() {
+        BorderPane.setMargin(pane, new Insets(0, 10, 0, 10));
+        pane.setStyle("-fx-box-border: transparent; -fx-background-color: white;");
+
+        ScrollPane sp = new ScrollPane(); {
+            VBox.setVgrow(sp, Priority.ALWAYS);
+            VBox.setMargin(sp, new Insets(10, 0, 10, 0));
+            sp.setStyle("-fx-box-border: transparent; -fx-border-width: 0;" +
+                    " -fx-background-color: white;");
+            BorderPane p = new BorderPane(); {
+                p.setStyle("-fx-box-border: transparent; -fx-background-color: white;");
+                GridPane q = new GridPane(); {
+                    q.add(clock, 0, 3);
+                    q.add(new Label("Jetons bleus"), 0, 5);
+                    q.add(blueTokensLabel, 1, 5);
+                    q.add(new Label("Jetons rouges"), 0, 6);
+                    q.add(redTokensLabel, 1, 6);
+                    q.add(new Label("Nombre de coups joués"), 0, 7);
+                    q.add(numberOfPlayLabel, 1, 7);
+                }
+                p.setCenter(pane);
+                p.setRight(q);
+            }
+            sp.setContent(p);
+
+        }
+        ((VBox) (scene.getRoot())).getChildren().addAll(sp);
+    }
+
+    private void createEventHandlers() {
+        ItemEnum.NEW_GAME.setEvent(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                resetGame();
+            }
+        });
+        ItemEnum.CLOSE.setEvent(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                System.exit(0);
+            }
+        });
+        ItemEnum.GAME.setEvent(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                AbstractStage stage = GameConfigurationStage.getInstance(Ataxx.this);
+                stage.render();
+            }
+        });
+        ItemEnum.BOARD.setEvent(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                AbstractStage stage = BoardConfigurationStage.getInstance(Ataxx.this);
+                stage.render();
+            }
+        });
+        ItemEnum.HELP.setEvent(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                AbstractStage stage = HelpStage.getInstance(Ataxx.this);
+                stage.render();
+            }
+        });
+    }
+
+    private void createAndInstallMenuBar() {
+        MenuBar menuBar = new MenuBar();
+        for (MenuEnum m : MenuEnum.values()) {
+            Menu menu = new Menu(m.getName());
+
+            List<ItemEnum> items = MenuEnum.getItems(m);
+            for (ItemEnum i : items) {
+                if (i == null) {
+                    menu.getItems().add(new SeparatorMenuItem());
+                } else {
+                    MenuItem menuItem = new MenuItem(i.getName());
+                    menuItem.setOnAction(i.getEvent());
+                    menu.getItems().add(menuItem);
+                }
+            }
+            menuBar.getMenus().add(menu);
+        }
+        ((VBox) scene.getRoot()).getChildren().add(menuBar);
     }
 
     private void createController(Stage stage) {
@@ -94,49 +210,7 @@ public class Ataxx extends Application {
         model.algorithmStateProperty().addListener(new AlgorithmChangeListener(model, this));
     }
 
-    private void placeComponents() {
-        BorderPane borderPane = new BorderPane();
-        borderPane.setRight(clock);
-        borderPane.setCenter(pane);
-        ScrollPane sp = new ScrollPane();
-        sp.setContent(borderPane);
-        VBox.setVgrow(sp, Priority.ALWAYS);
-        BorderPane.setMargin(pane, new Insets(0, 10, 0, 10));
-        VBox.setMargin(sp, new Insets(10, 0, 10, 0));
-        sp.setStyle("-fx-box-border: transparent; -fx-border-width: 0; -fx-background-color: white;");
-        borderPane.setStyle("-fx-box-border: transparent; -fx-background-color: white;");
-        pane.setStyle("-fx-box-border: transparent; -fx-background-color: white;");
-        ((VBox) (scene.getRoot())).getChildren().addAll(sp);
-    }
-
-    private void createModel() {
-        configuration = new AtaxxConfiguration();
-        model = AtaxxModel.getInstance();;
-        model.generate(configuration);
-    }
-
-    private void createView() {
-        pieceViews = new ArrayList<>();
-        tileViews = new ArrayList<>();
-        clock = new Label();
-        final DateFormat format = DateFormat.getInstance();
-        final Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                final Calendar cal = Calendar.getInstance();
-                clock.setText(format.format(cal.getTime()));
-            }
-        }));
-        timeline.setCycleCount(Animation.INDEFINITE);
-        timeline.play();
-        pane = new AnchorPane();
-        pane.setMaxWidth(600);
-        pane.setMaxHeight(600);
-        pane.setPrefSize(600, 600);
-        initBoard(pane, configuration.getBoardSize());
-    }
-
-    private void initBoard(Pane pane, int size) {
+    private void initBoardGame(Pane pane, int size) {
         NumberBinding gridSize = Bindings.min(
                 pane.widthProperty().subtract(20),
                 pane.heightProperty().subtract(20));
@@ -174,7 +248,7 @@ public class Ataxx extends Application {
 
                 PieceModel pieceModel = tile.getPieceModel();
                 if (pieceModel != null) {
-                    pieceViews.add(makePiece(pieceModel, tileView));
+                    pieceViews.add(createAndConfigureAPieceView(pieceModel, tileView));
                 }
                 tileViews.add(tileView);
                 pane.getChildren().add(tileView);
@@ -185,71 +259,7 @@ public class Ataxx extends Application {
         }
     }
 
-    private void createAndInstallMenuBar() {
-        MenuBar menuBar = new MenuBar();
-        for (MenuEnum m : MenuEnum.values()) {
-            Menu menu = new Menu(m.getName());
-
-            List<ItemEnum> items = MenuEnum.getItems(m);
-            for (ItemEnum i : items) {
-                if (i == null) {
-                    menu.getItems().add(new SeparatorMenuItem());
-                } else {
-                    MenuItem menuItem = new MenuItem(i.getName());
-                    menuItem.setOnAction(i.getEvent());
-                    menu.getItems().add(menuItem);
-                }
-            }
-            menuBar.getMenus().add(menu);
-        }
-        ((VBox) scene.getRoot()).getChildren().add(menuBar);
-    }
-
-    private void createEventHandlers() {
-        ItemEnum.NEW_GAME.setEvent(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                reset();
-            }
-        });
-        ItemEnum.CLOSE.setEvent(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                System.exit(0);
-            }
-        });
-        ItemEnum.GAME.setEvent(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                AbstractStage stage = GameConfigurationStage.getInstance(Ataxx.this);
-                stage.render();
-            }
-        });
-        ItemEnum.BOARD.setEvent(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                AbstractStage stage = BoardConfigurationStage.getInstance(Ataxx.this);
-                stage.render();
-            }
-        });
-        ItemEnum.HELP.setEvent(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                //TODO
-            }
-        });
-    }
-
-    public void reset() {
-        pieceViews.clear();
-        tileViews.clear();
-        pane.getChildren().clear();
-        model.generate(configuration);
-        initBoard(pane, configuration.getBoardSize());
-        model.algorithmStateProperty().addListener(new AlgorithmChangeListener(model, this));
-    }
-
-    private PieceView makePiece(PieceModel p, TileView t) {
+    private PieceView createAndConfigureAPieceView(PieceModel p, TileView t) {
         PieceView pieceView = new PieceView(p, t);
         pieceView.setOnMousePressed(new AtaxxMousePressedHandler(model, this));
         pieceView.setOnMouseDragged(new AtaxxMouseDraggedHandler(model, this));
@@ -257,7 +267,16 @@ public class Ataxx extends Application {
         return pieceView;
     }
 
-    public void refresh() {
+    public void resetGame() {
+        pieceViews.clear();
+        tileViews.clear();
+        pane.getChildren().clear();
+        model.generate(configuration);
+        initBoardGame(pane, configuration.getBoardSize());
+        model.algorithmStateProperty().addListener(new AlgorithmChangeListener(model, this));
+    }
+
+    public void refreshView() {
         for (PieceView p : pieceViews) {
             pane.getChildren().remove(p);
         }
@@ -265,14 +284,17 @@ public class Ataxx extends Application {
         for (TileView r : tileViews) {
             PieceModel pieceModel = r.getModel().getPieceModel();
             if (pieceModel != null) {
-                PieceView pieceView = makePiece(pieceModel, r);
+                PieceView pieceView = createAndConfigureAPieceView(pieceModel, r);
                 pieceViews.add(pieceView);
                 pane.getChildren().add(pieceView);
             }
         }
+        blueTokensLabel.setText(model.blueTokensProperty().get() + "");
+        redTokensLabel.setText(model.redTokensProperty().get() + "");
+        numberOfPlayLabel.setText(model.numberOfPlayProperty().get() + "");
     }
 
-    public void displayWinner() {
+    public void gameOverAlert() {
         AbstractStage stage = DialogStage.getInstance(Ataxx.this);
         stage.render();
     }

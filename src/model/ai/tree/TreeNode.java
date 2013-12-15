@@ -70,12 +70,12 @@ public class TreeNode implements Node {
     }
 
     @Override
-    public TileModel getTile() {
+    public TileModel getStartingTile() {
         return start;
     }
 
     @Override
-    public TileModel getTileEnd() {
+    public TileModel getEndingTile() {
         return end;
     }
 

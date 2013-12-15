@@ -21,7 +21,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
     private int depth;
     private Node resultNode;
 
-    protected abstract Node runThread();
+    protected abstract Node runAlgorithm();
 
     public AbstractAlgorithm(int depth) {
         this.model = AtaxxModel.getInstance();
@@ -32,9 +32,9 @@ public abstract class AbstractAlgorithm implements Algorithm {
                 return new Task<Void>() {
                     @Override protected Void call() throws Exception {
                         buildTree();
-                        resultNode = runThread();
-                        TileModel start = resultNode.getTile();
-                        TileModel end = resultNode.getTileEnd();
+                        resultNode = runAlgorithm();
+                        TileModel start = resultNode.getStartingTile();
+                        TileModel end = resultNode.getEndingTile();
                         Thread.sleep(300);
                         try {
                             model.move(model.get(start.getPositionX(), start.getPositionY()),
@@ -51,7 +51,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
         };
     }
 
-    public ReadOnlyObjectProperty<Worker.State> stateProperty() {
+    public ReadOnlyObjectProperty<Worker.State> algorithmStateProperty() {
         return service.stateProperty();
     }
 
@@ -91,7 +91,7 @@ public abstract class AbstractAlgorithm implements Algorithm {
                     clone.move(clone.get(start.getPositionX(), start.getPositionY()),
                             clone.get(end.getPositionX(), end.getPositionY()));
                     if (this.depth == depth + 1) {
-                        n.setValue(clone.getRedTokens() - clone.getBlueTokens());
+                        n.setValue(clone.redTokensProperty().get() - clone.blueTokensProperty().get());
                     } else {
                         computeTree(clone, owner.opposite(), n, depth + 1);
                     }

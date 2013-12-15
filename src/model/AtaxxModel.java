@@ -1,9 +1,11 @@
 package model;
 
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.concurrent.Worker;
-import model.ai.AlgorithmEnum;
-import model.ai.DifficultyEnum;
+import model.ai.AlgorithmType;
+import model.ai.DifficultyType;
 import model.ai.algorithms.Algorithm;
 import model.board.Board;
 import model.board.DefaultBoard;
@@ -14,15 +16,21 @@ import java.util.List;
 public class AtaxxModel implements Cloneable {
 
     private static AtaxxModel instance;
+
+    private IntegerProperty blueTokensProperty;
+    private IntegerProperty redTokensProperty;
+    private IntegerProperty numberOfPlayProperty;
+
     private List<List<TileModel>> tiles;
     private Owner currentPlayer;
     private Board board;
+    private Algorithm algorithm;
+
     private int boardSize;
     private int blueTokens;
     private int redTokens;
     private int numberOfPlay;
     private boolean gameVSComputer;
-    private Algorithm algorithm;
 
     private AtaxxModel() {
         tiles = new ArrayList<>();
@@ -35,7 +43,7 @@ public class AtaxxModel implements Cloneable {
         return instance;
     }
 
-    public void generate(AtaxxConfiguration c) {;
+    public void generate(Configuration c) {;
         boardSize = c.getBoardSize();
         this.gameVSComputer = c.isGameVSComputer();
         if (c.getBoardType() == null) {
@@ -44,7 +52,7 @@ public class AtaxxModel implements Cloneable {
             board = c.getBoardType().make(boardSize);
         }
         tiles.clear();
-        numberOfPlay = 1;
+        numberOfPlay = 0;
         currentPlayer = Owner.BLUE;
 
         for (int i = 0; i < boardSize; i++) {
@@ -98,6 +106,7 @@ public class AtaxxModel implements Cloneable {
         }
         if (canMove) {
             updateTokens();
+            numberOfPlay++;
         } else {
             throw new IllegalAccessException("Error in move");
         }
@@ -165,7 +174,9 @@ public class AtaxxModel implements Cloneable {
                 }
             }
         }
-        numberOfPlay++;
+        blueTokensProperty().set(blueTokens);
+        redTokensProperty().set(redTokens);
+        numberOfPlayProperty().set(numberOfPlay);
     }
 
     private void spread(TileModel c) {
@@ -249,7 +260,7 @@ public class AtaxxModel implements Cloneable {
         }
     }
 
-    public void setAlgorithm(AlgorithmEnum a, DifficultyEnum d) {
+    public void setAlgorithm(AlgorithmType a, DifficultyType d) {
         int depth = d.getDepth();
         this.algorithm = a.make(depth);
     }
@@ -273,19 +284,28 @@ public class AtaxxModel implements Cloneable {
 
     }
 
-    public int getNumberOfPlay() {
-        return numberOfPlay;
+
+    public IntegerProperty numberOfPlayProperty() {
+        if(this.numberOfPlayProperty == null) {
+            this.numberOfPlayProperty = new SimpleIntegerProperty();
+        }
+        return this.numberOfPlayProperty;
     }
 
-    public int getBlueTokens() {
-        return blueTokens;
+    public IntegerProperty blueTokensProperty() {
+        if(this.blueTokensProperty == null) {
+            this.blueTokensProperty = new SimpleIntegerProperty();
+        }
+        return this.blueTokensProperty;
     }
-
-    public int getRedTokens() {
-        return redTokens;
+    public IntegerProperty redTokensProperty() {
+        if(this.redTokensProperty == null) {
+            this.redTokensProperty = new SimpleIntegerProperty();
+        }
+        return this.redTokensProperty;
     }
 
     public ReadOnlyObjectProperty<Worker.State> algorithmStateProperty() {
-        return algorithm.stateProperty();
+        return algorithm.algorithmStateProperty();
     }
 }

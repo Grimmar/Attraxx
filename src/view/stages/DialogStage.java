@@ -26,7 +26,7 @@ public class DialogStage extends AbstractStage {
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                parent.reset();
+                parent.resetGame();
                 close();
             }
         });

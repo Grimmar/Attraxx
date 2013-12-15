@@ -21,7 +21,7 @@ public interface Node {
     
     void setParent(Node parent);
     
-    TileModel getTile();
+    TileModel getStartingTile();
     
-    TileModel getTileEnd();
+    TileModel getEndingTile();
 }

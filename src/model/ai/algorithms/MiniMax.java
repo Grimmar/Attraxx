@@ -14,7 +14,7 @@ public class MiniMax extends AbstractAlgorithm {
     }
 
     @Override
-    public Node runThread() {
+    public Node runAlgorithm() {
         Node n = null;
 
         for (Node succ : root.getSuccessors()) {
@@ -28,8 +28,8 @@ public class MiniMax extends AbstractAlgorithm {
             n = n.getParent();
         }
 
-        System.out.println("Move " + n.getTile().getPositionX() + " , " + n.getTile().getPositionY() + " =>"
-                + n.getTileEnd().getPositionX() + " , " + n.getTileEnd().getPositionY());
+        System.out.println("Move " + n.getStartingTile().getPositionX() + " , " + n.getStartingTile().getPositionY() + " =>"
+                + n.getEndingTile().getPositionX() + " , " + n.getEndingTile().getPositionY());
         return n;
     }
 

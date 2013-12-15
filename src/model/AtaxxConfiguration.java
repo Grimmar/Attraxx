@@ -1,15 +1,15 @@
 package model;
 
-import model.ai.AlgorithmEnum;
-import model.ai.DifficultyEnum;
+import model.ai.AlgorithmType;
+import model.ai.DifficultyType;
 import model.board.BoardType;
 
-public class AtaxxConfiguration {
+public class AtaxxConfiguration implements Configuration {
 
     private static final int BOARD_DEFAULT_SIZE = 7;
     private BoardType boardType;
-    private DifficultyEnum difficulty;
-    private AlgorithmEnum algorithm;
+    private DifficultyType difficulty;
+    private AlgorithmType algorithm;
     private int boardSize;
     private boolean singleToken;
     private boolean gameVSComputer;
@@ -19,15 +19,15 @@ public class AtaxxConfiguration {
         boardSize = BOARD_DEFAULT_SIZE;
         gameVSComputer = true;
         boardType = BoardType.DEFAULT;
-        algorithm = AlgorithmEnum.MINIMAX;
-        difficulty = DifficultyEnum.APPRENTICE;
+        algorithm = AlgorithmType.MINIMAX;
+        difficulty = DifficultyType.APPRENTICE;
     }
 
-    public AlgorithmEnum getAlgorithm() {
+    public AlgorithmType getAlgorithm() {
         return algorithm;
     }
 
-    public void setAlgorithm(AlgorithmEnum algorithm) {
+    public void setAlgorithm(AlgorithmType algorithm) {
         this.algorithm = algorithm;
     }
 
@@ -47,11 +47,11 @@ public class AtaxxConfiguration {
         this.gameVSComputer = gameVSComputer;
     }
 
-    public DifficultyEnum getDifficulty() {
+    public DifficultyType getDifficulty() {
         return difficulty;
     }
 
-    public void setDifficulty(DifficultyEnum difficulty) {
+    public void setDifficulty(DifficultyType difficulty) {
         this.difficulty = difficulty;
     }
 

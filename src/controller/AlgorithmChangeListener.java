@@ -28,16 +28,16 @@ public class AlgorithmChangeListener implements ChangeListener<Worker.State> {
     public void changed(ObservableValue<? extends Worker.State> observableValue, Worker.State oldState, Worker.State newState) {
         if (Worker.State.SUCCEEDED == observableValue.getValue()
                 || Worker.State.CANCELLED == observableValue.getValue()) {
-            view.refresh();
+            view.refreshView();
             if (model.isGameVSComputer() && model.isCurrentPlayerTurn(Owner.RED)
                     && !model.isGameOver()) {
                 model.play();
-                view.refresh();
+                view.refreshView();
             }
             if (model.isGameOver()) {
-                view.displayWinner();
+                view.gameOverAlert();
             }
-            view.refresh();
+            view.refreshView();
         }
     }
 }
