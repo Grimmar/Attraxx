@@ -22,14 +22,15 @@ public class Negamax extends AbstractAlgorithm {
     protected Node runAlgorithm() {
         Node n = null;
 
-        for (Node succ : root.getSuccessors()) {
-            if (n == null) {
-                n = Negamax(succ);
-            } else {
-                System.out.println(n.isMax());
-                n = max(n, Negamax(succ));
-            }
-        }
+        /*for (Node succ : root.getSuccessors()) {
+         if (n == null) {
+         n = Negamax(succ);
+         } else {
+         System.out.println(n.isMax());
+         n = max(n, Negamax(succ));
+         }*/
+        n = Negamax(root);
+        //}
         while (root != n && root != n.getParent()) {
             n = n.getParent();
         }
@@ -40,15 +41,15 @@ public class Negamax extends AbstractAlgorithm {
     }
 
     private Node Negamax(Node n) {
-        if(n.isLeaf()){
+        if (n.isLeaf()) {
             return n;
         } else {
             Node bestValue = new TreeNode();
             bestValue.setValue(Integer.MIN_VALUE);
-            Node val;
-            for(Node succ : n.getSuccessors()){
-                val = Negamax(succ);
-                val.setValue(-val.getValue());
+            for (Node succ : n.getSuccessors()) {
+                Node val = Negamax(succ);
+                if(!val.isMax())
+                    val.setValue(-val.getValue());
                 bestValue = max(bestValue, val);
             }
             return bestValue;
