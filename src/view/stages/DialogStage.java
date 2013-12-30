@@ -52,11 +52,12 @@ public class DialogStage extends AbstractStage {
         sceneTitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
         grid.add(sceneTitle, 0, 0, 2, 1);
 
-        String name = "";
         if (parent.getWinner() != null) {
-            name = parent.getWinner().getName();
+            grid.add(new Label("Le gagnant est le joueur " + parent.getWinner().getName()), 0, 2);
+        } else {
+            grid.add(new Label("Personne n'a gagné. Match nul."), 0, 2);
         }
-        grid.add(new Label("Le gagnant est le joueur " + name), 0, 2);
+
         grid.add(new Label("La partie a durée " + parent.getSpentTime()), 0, 3);
 
         //Button

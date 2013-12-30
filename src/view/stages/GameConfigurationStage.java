@@ -52,7 +52,6 @@ public class GameConfigurationStage extends AbstractStage {
 
         difficulty = new Label("Difficulté :");
         algorithm = new Label("Algorithme :");
-        //TODO SET enums
         ObservableList<DifficultyType> difficultyEnumOptions =
                 FXCollections.observableArrayList(DifficultyType.values());
         difficultyComboBox = new ComboBox<>();
