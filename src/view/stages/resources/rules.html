@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rules</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css" type="text/css" />
+</head>
+<body>
+<h1>R&eacute;gles du jeu</h1>
+<p>Cette section va pr&eacute;senter les r&egrave;gles du jeu Ataxx</p>
+<h2>Configuration de base du jeu</h2>
+<p>Le jeu a besoin d'au moins deux joueurs (humain et/ou ordinateur). Il se joue sur une grille carr&eacute;e de dimension 7x7.
+Le but du jeu est d'avoir le maximum de pi&egrave;ces sur le plateau &agrave; la fin en convertissant le plus grand nombre de pi&egrave;ces adverses.</p>
+<p>Chaque joueur commence avec deux jetons plac&eacute;s dans les coins du plateau. Le joueur bleu commence la partie</p>
+<h2>R&egrave;gles</h2>
+<h3>Comment jouer</h3>
+<p>
+Durant leur tour, les joueurs d&eacute;placent une de leur pi&egrave;ce d'un ou de deux espaces dans n'importe quelle condition (horizontal, vertical ou diagonale).
+Le d&eacute;placement ne peut cependant pas sauter un pi&egrave; qu'elle lui appartienne ou qu'elle soit à l'adversaire.
+Si la destination est adjacente &agrave; la source, une nouvelle pi&egrave;ce est cr&eacute;&eacute;e sur la case d'arriv&eacute;e vide.
+Sinon, la pi&egrave;ce se d&eacute;place de la source vers la destination.
+Apr&egrave;s le d&eacute;placement, toutes les pi&egrave; de l'adversaire adjacentes sont converties en pi&egrave; du joueur ayant fait le d&eacute;placement.
+Les joueurs alternent tant qu'un d&eacute;placement possible existe pour un joueur. Dans le cas contraire, il doit passer son tour.
+</p>
+<h3>Fin du jeu</h3>
+<p>
+Le jeu s'arr&ecirc; quand toutes les cases ont &eacute;t&eacute; remplies ou un des joueurs n'a plus de pi&egrave;ces. Le joueur en ayant le plus a gagn&eacute;. Il peut y avoir match nul
+quand le nombre de jetons conquit est &eacute;gal.
+</p>
+<h2>Variations possibles</h2>
+<p>Nous avons d&eacute;cid&eacute; de mettre en place les variations possibles:
+<ul>
+<li>Commencer avec un ou deux jetons</li>
+<li>Ajout de cases noires sur lesquelles on ne peut pas jouer</li>
+<li>Taille variable de la grille entre 7x7 et 10x110</li>
+<li>Plusieurs niveaux de difficulté possible</li>
+<li>Possibilité de choisir l'algorithme de l'ordinateur</li>
+</ul>
+</p>
+</body>
+</html>

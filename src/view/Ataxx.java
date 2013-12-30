@@ -311,6 +311,9 @@ public class Ataxx extends Application {
         initBoardGame(pane, configuration.getBoardSize());
         model.algorithmStateProperty().addListener(new AlgorithmChangeListener(model, this));
         currentTime = new Date();
+        blueTokensLabel.setText(model.blueTokensProperty().get() + "");
+        redTokensLabel.setText(model.redTokensProperty().get() + "");
+        numberOfPlayLabel.setText(model.numberOfPlayProperty().get() + "");
     }
 
     public void refreshView() {

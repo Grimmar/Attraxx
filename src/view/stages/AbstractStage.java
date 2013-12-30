@@ -20,7 +20,7 @@ public abstract class AbstractStage extends Stage {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
-        scene = new Scene(grid, 400, 200);
+        scene = new Scene(grid, 400, 300);
 
         createView();
         placeComponents();
