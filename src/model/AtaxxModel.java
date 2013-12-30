@@ -11,6 +11,7 @@ import model.board.Board;
 import model.board.DefaultBoard;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class AtaxxModel implements Cloneable {
@@ -31,6 +32,7 @@ public class AtaxxModel implements Cloneable {
     private int redTokens;
     private int numberOfPlay;
     private boolean gameVSComputer;
+    private Date startTime;
 
     private AtaxxModel() {
         tiles = new ArrayList<>();
@@ -68,6 +70,7 @@ public class AtaxxModel implements Cloneable {
         }
         setOwnership(boardSize, c.isSingleToken());
         setAlgorithm(c.getAlgorithm(), c.getDifficulty());
+        startTime = new Date();
     }
 
     private void setOwnership(int size, boolean singleToken) {
@@ -281,9 +284,11 @@ public class AtaxxModel implements Cloneable {
                     : null);
         }
         return null;
-
     }
 
+    public Date getStartTime() {
+        return startTime;
+    }
 
     public IntegerProperty numberOfPlayProperty() {
         if(this.numberOfPlayProperty == null) {

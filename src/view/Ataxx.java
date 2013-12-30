@@ -1,6 +1,9 @@
 package view;
 
-import controller.*;
+import controller.AlgorithmChangeListener;
+import controller.AtaxxMouseDraggedHandler;
+import controller.AtaxxMousePressedHandler;
+import controller.AtaxxMouseReleasedHandler;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -14,6 +17,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -25,9 +30,9 @@ import view.component.PieceView;
 import view.component.TileView;
 import view.stages.*;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class Ataxx extends Application {
@@ -42,6 +47,7 @@ public class Ataxx extends Application {
     private Label blueTokensLabel;
     private Label redTokensLabel;
     private Label numberOfPlayLabel;
+    private Date currentTime;
 
     public static void main(String[] args) {
         launch(args);
@@ -72,60 +78,68 @@ public class Ataxx extends Application {
         configuration = new AtaxxConfiguration();
         model = AtaxxModel.getInstance();;
         model.generate(configuration);
+        currentTime = new Date();
     }
 
     private void createView() {
         pieceViews = new ArrayList<>();
         tileViews = new ArrayList<>();
         clock = new Label();
-        final DateFormat format = DateFormat.getInstance();
-        final Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                final Calendar cal = Calendar.getInstance();
-                clock.setText(format.format(cal.getTime()));
-            }
-        }));
-        timeline.setCycleCount(Animation.INDEFINITE);
-        timeline.play();
-        pane = new AnchorPane();
-        pane.setMaxWidth(600);
-        pane.setMaxHeight(600);
-        pane.setPrefSize(600, 600);
-        initBoardGame(pane, configuration.getBoardSize());
-
+        clock.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));
         blueTokensLabel = new Label(model.blueTokensProperty().get() + "");
+        blueTokensLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));
         redTokensLabel = new Label(model.redTokensProperty().get() + "");
+        redTokensLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));
         numberOfPlayLabel = new Label(model.numberOfPlayProperty().get() + "");
+        numberOfPlayLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));
     }
 
     private void placeComponents() {
-        BorderPane.setMargin(pane, new Insets(0, 10, 0, 10));
-        pane.setStyle("-fx-box-border: transparent; -fx-background-color: white;");
+        pane = new AnchorPane(); {
+            pane.setMaxWidth(600);
+            pane.setMaxHeight(600);
+            pane.setPrefSize(600, 600);
+            initBoardGame(pane, configuration.getBoardSize());
+            BorderPane.setMargin(pane, new Insets(0, 10, 0, 10));
+            pane.setStyle("-fx-box-border: transparent; " +
+                    "-fx-background-color: white;");
 
-        ScrollPane sp = new ScrollPane(); {
-            VBox.setVgrow(sp, Priority.ALWAYS);
-            VBox.setMargin(sp, new Insets(10, 0, 10, 0));
-            sp.setStyle("-fx-box-border: transparent; -fx-border-width: 0;" +
-                    " -fx-background-color: white;");
-            BorderPane p = new BorderPane(); {
-                p.setStyle("-fx-box-border: transparent; -fx-background-color: white;");
-                GridPane q = new GridPane(); {
-                    q.add(clock, 0, 3);
-                    q.add(new Label("Jetons bleus"), 0, 5);
-                    q.add(blueTokensLabel, 1, 5);
-                    q.add(new Label("Jetons rouges"), 0, 6);
-                    q.add(redTokensLabel, 1, 6);
-                    q.add(new Label("Nombre de coups joués"), 0, 7);
-                    q.add(numberOfPlayLabel, 1, 7);
+            ScrollPane sp = new ScrollPane(); {
+                VBox.setVgrow(sp, Priority.ALWAYS);
+                VBox.setMargin(sp, new Insets(10, 0, 10, 0));
+                sp.setStyle("-fx-box-border: transparent; -fx-border-width: 0;" +
+                        " -fx-background-color: white;");
+
+                BorderPane p = new BorderPane(); {
+                    p.setStyle("-fx-box-border: transparent; " +
+                            "-fx-background-color: white;");
+
+                    GridPane q = new GridPane(); {
+                        Label l = new Label("Temps écoulé");
+                        l.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));
+                        q.add(l, 0, 3);
+                        q.add(clock, 1, 3);
+                        l = new Label("Jetons bleus");
+                        l.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));
+                        q.add(l, 0, 5);
+                        q.add(blueTokensLabel, 1, 5);
+                        l = new Label("Jetons rouges");
+                        l.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));
+                        q.add(l, 0, 6);
+                        q.add(redTokensLabel, 1, 6);
+                        l = new Label("Nombre de coups joués");
+                        l.setFont(Font.font("Tahoma", FontWeight.NORMAL, 14));
+                        q.add(l, 0, 7);
+                        q.add(numberOfPlayLabel, 1, 7);
+                    }
+                    p.setCenter(pane);
+                    p.setRight(q);
                 }
-                p.setCenter(pane);
-                p.setRight(q);
-            }
-            sp.setContent(p);
+                sp.setContent(p);
 
+            }
+            ((VBox) (scene.getRoot())).getChildren().addAll(sp);
         }
-        ((VBox) (scene.getRoot())).getChildren().addAll(sp);
     }
 
     private void createEventHandlers() {
@@ -207,7 +221,29 @@ public class Ataxx extends Application {
             }
         });
 
+        final Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                currentTime = Calendar.getInstance().getTime();
+                long time = currentTime.getTime() - model.getStartTime().getTime();
+                clock.setText(longToDateStringFormat(time));
+            }
+        }));
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.play();
+
         model.algorithmStateProperty().addListener(new AlgorithmChangeListener(model, this));
+    }
+
+    private String longToDateStringFormat(long timeinMillis) {
+        StringBuilder sb= new StringBuilder();
+        timeinMillis = timeinMillis / 1000;
+        long hours = timeinMillis / 3600;
+        timeinMillis = timeinMillis % 3600;
+        long minutes = timeinMillis / 60;
+        timeinMillis = timeinMillis % 60;
+        sb.append(hours).append("h:").append(minutes).append("m:").append(timeinMillis).append("s");
+        return sb.toString();
     }
 
     private void initBoardGame(Pane pane, int size) {
@@ -274,6 +310,7 @@ public class Ataxx extends Application {
         model.generate(configuration);
         initBoardGame(pane, configuration.getBoardSize());
         model.algorithmStateProperty().addListener(new AlgorithmChangeListener(model, this));
+        currentTime = new Date();
     }
 
     public void refreshView() {
@@ -313,6 +350,11 @@ public class Ataxx extends Application {
 
     public Owner getWinner() {
         return model.getWinner();
+    }
+
+    public String getSpentTime() {
+        return longToDateStringFormat(currentTime.getTime()
+                - model.getStartTime().getTime());
     }
 
     public AtaxxConfiguration getConfiguration() {

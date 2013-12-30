@@ -48,18 +48,20 @@ public class DialogStage extends AbstractStage {
     protected void placeComponents() {
         GridPane grid = ((GridPane)scene.getRoot());
         //Title
-        Text sceneTitle = new Text("Gagnant : ");
+        Text sceneTitle = new Text("Fin de la partie : ");
         sceneTitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
         grid.add(sceneTitle, 0, 0, 2, 1);
+
+        String name = "";
+        if (parent.getWinner() != null) {
+            name = parent.getWinner().getName();
+        }
+        grid.add(new Label("Le gagnant est le joueur " + name), 0, 2);
+        grid.add(new Label("La partie a durée " + parent.getSpentTime()), 0, 3);
 
         //Button
         HBox hbBtn = new HBox(10);
         hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
-        String name = "";
-        if (parent.getWinner() != null) {
-              name = parent.getWinner().getName();
-        }
-        hbBtn.getChildren().add(new Label("Le gagnant est le joueur " + name));
         hbBtn.getChildren().add(btn);
         grid.add(hbBtn, 1, 2);
     }
